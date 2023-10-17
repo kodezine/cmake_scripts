@@ -1,0 +1,8 @@
+si JTAG
+speed 4000
+h
+loadbin ${BINARY}, ${FLASH_START}
+verifybin ${BINARY}, ${FLASH_START}
+r
+g
+qc

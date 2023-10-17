@@ -1,0 +1,6 @@
+si JTAG
+speed 4000
+h
+r
+erase
+qc

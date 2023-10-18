@@ -14,7 +14,7 @@ The library version is the ARM GitHub version without the `v`, i.e.
 ## Usage
 ### Build from sources
 #### Steps
-1. Provide a valid value of `GITHUB_BRANCH_cmsis_v5` as described above.`
+1. Provide a valid value of `GITHUB_BRANCH_cmsis_v5` as described above.
 #### Example
 ```cmake
 # setup the cmsis version
@@ -24,7 +24,7 @@ include(${cmake-toolchains_SOURCE_DIR}/frameworks/arm_cmsis_v5.cmake)
 ```
 ### Use precompiled tag
 #### Steps
-1. Provide a valid value of `GITHUB_BRANCH_cmsis_v5` as described above.`
+1. Provide a valid value of `GITHUB_BRANCH_cmsis_v5` as described above.
 2. Set the variable `PRECOMPILED_TAG_cmsis_v5` to a valid tag value to the precompiled releases.
 #### Example
 ```cmake

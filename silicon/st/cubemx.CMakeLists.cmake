@@ -11,9 +11,9 @@ else ()
     )
 endif ()
 
-if ((NOT DEFINED cmsis-v5_CORE_INCLUDE_PATH) OR
-    (NOT DEFINED cmsis-v5_DEVICE_INCLUDE_PATH))
-    message(FATAL_ERROR "${PROJECT_NAME}: Can only compile if cmsis-v5 is found")
+if ((NOT DEFINED cmsis_v5_CORE_INCLUDE_PATH) OR
+    (NOT DEFINED cmsis_v5_DEVICE_INCLUDE_PATH))
+    message(FATAL_ERROR "${PROJECT_NAME}: Can only compile if cmsis v5 is found")
 endif ()
 
 # Check for valid paths to Cube Drivers used in this file
@@ -73,8 +73,8 @@ target_sources(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        $<BUILD_INTERFACE:${cmsis-v5_CORE_INCLUDE_PATH}>
-        $<BUILD_INTERFACE:${cmsis-v5_DEVICE_INCLUDE_PATH}>
+        $<BUILD_INTERFACE:${cmsis_v5_CORE_INCLUDE_PATH}>
+        $<BUILD_INTERFACE:${cmsis_v5_DEVICE_INCLUDE_PATH}>
         $<BUILD_INTERFACE:${st_HAL_DRV_INCLUDE_DIR}>
         $<BUILD_INTERFACE:${st_HAL_DRV_INCLUDE_LEGACY_DIR}>
         $<BUILD_INTERFACE:${st_CMSIS_DEVICE_INCLUDE_DIR}>
@@ -100,7 +100,7 @@ set_target_properties(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     INTERFACE
-    cmsis-v5
+    cmsis_v5
 )
 
 # set the target compile options

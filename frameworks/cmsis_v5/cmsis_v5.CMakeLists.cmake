@@ -84,21 +84,17 @@ target_sources(${GenericName}
 )
 
 # define the generic definition based on architecture --------------------------
-if (($ENV{CORTEX_TYPE} STREQUAL "CM7") OR
-    ($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
-    if ((${STM32_DEVICE} MATCHES "STM32H743XI") OR
-        (${STM32_DEVICE} MATCHES "STM32H7A3ZI"))
-        set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
-    else ()
-        set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
-    endif ()
+if (($ENV{CORTEX_TYPE} STREQUAL "CM7"))
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
+elseif (($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
 else ()
     set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
 endif ()
-
+cmake_print_variables(ARMCMFTYPE)
 target_compile_definitions(${GenericName}
     PUBLIC
-    ARMCMFTYPE # defines the single, double or no floating point support
+    ${ARMCMFTYPE} # defines the single, double or no floating point support
 )
 
 target_link_libraries(${GenericName}

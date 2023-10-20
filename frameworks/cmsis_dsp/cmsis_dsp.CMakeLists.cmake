@@ -1,15 +1,13 @@
-if (${PROJECT_NAME} STREQUAL cmsis_dsp)
-
-else ()
-    cmake_minimum_required(VERSION 3.27)
-
-    project(
-        cmsis_dsp
-        VERSION ${GITHUB_BRANCH_CMSIS_DSP}
-        LANGUAGES C
-        DESCRIPTION "CMSIS DSP made from scratch"
-    )
+if (NOT DEFINED ${libName})
+    set(libName cmsis_dsp)
 endif ()
+
+project(
+    ${libName}
+    VERSION ${GITHUB_BRANCH_cmsis_dsp}
+    LANGUAGES C
+    DESCRIPTION "CMSIS DSP made from scratch"
+)
 
 option(NEON "Neon acceleration" OFF)
 option(NEONEXPERIMENTAL "Neon experimental acceleration" OFF)
@@ -39,22 +37,22 @@ include(CMakePackageConfigHelpers)
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
 
-include(helper/BasicMathFunctions.cmake)
-include(helper/BayesFunctions.cmake)
-include(helper/CommonTables.cmake)
-include(helper/ComplexMathFunctions.cmake)
-include(helper/ControllerFunctions.cmake)
-include(helper/DistanceFunctions.cmake)
-include(helper/FastMathFunctions.cmake)
-include(helper/FilteringFunctions.cmake)
-include(helper/InterpolationFunctions.cmake)
-include(helper/MatrixFunctions.cmake)
-include(helper/QuaternionMathFunctions.cmake)
-include(helper/StatisticsFunctions.cmake)
-include(helper/SupportFunctions.cmake)
-include(helper/SVMFunctions.cmake)
-include(helper/TransformFunctions.cmake)
-include(helper/WindowFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/BasicMathFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/BayesFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/CommonTables.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/ComplexMathFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/ControllerFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/DistanceFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/FastMathFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/FilteringFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/InterpolationFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/MatrixFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/QuaternionMathFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/StatisticsFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/SupportFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/SVMFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/TransformFunctions.cmake)
+include(${cmake_scripts_SOURCE_DIR}/frameworks/cmsis_dsp/helper/WindowFunctions.cmake)
 
 # set public headers as a globbed function
 file(GLOB_RECURSE ${PROJECT_NAME}_PUBLIC_HEADERS ${cmsis_dsp_SOURCE_DIR}/Include/*.h)
@@ -138,8 +136,8 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
 
     PRIVATE
-        ${cmsis-v5_CORE_INCLUDE_PATH}
-        ${cmsis-v5_DEVICE_INCLUDE_PATH}
+        ${cmsis_v5_CORE_INCLUDE_PATH}
+        ${cmsis_v5_DEVICE_INCLUDE_PATH}
         $<BUILD_INTERFACE:${cmsis_dsp_SOURCE_DIR}/PrivateInclude>
     PUBLIC
         $<BUILD_INTERFACE:${cmsis_dsp_SOURCE_DIR}/Include>
@@ -150,7 +148,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     INTERFACE
-        cmsis
+        cmsis_v5
 )
 
 include(${cmsis_dsp_SOURCE_DIR}/Source/configDsp.cmake)
@@ -158,7 +156,7 @@ include(${cmsis_dsp_SOURCE_DIR}/Source/configDsp.cmake)
 configDsp(${PROJECT_NAME})
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
-    VERSION       ${GITHUB_BRANCH_CMSIS_DSP}
+    VERSION       ${GITHUB_BRANCH_cmsis_dsp}
     COMPATIBILITY SameMajorVersion
 )
 

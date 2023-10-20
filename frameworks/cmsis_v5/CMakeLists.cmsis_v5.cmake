@@ -1,13 +1,12 @@
-
-if (${PROJECT_NAME} STREQUAL ${libName})
-
-else ()
-    project(${libName}
-        VERSION ${GITHUB_BRANCH_${libName}}
-        LANGUAGES C
-        DESCRIPTION "Header only library for CMSIS V5"
-    )
+if (NOT DEFINED ${libName})
+    set(libName cmsis_v5)
 endif ()
+
+project(${libName}
+    VERSION ${GITHUB_BRANCH_${libName}}
+    LANGUAGES C
+    DESCRIPTION "Header only library for CMSIS V5"
+)
 
 # Main target ------------------------------------------------------------------
 add_library(${PROJECT_NAME} INTERFACE)
@@ -84,9 +83,22 @@ target_sources(${GenericName}
     ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Source/system_ARM$ENV{CORTEX_TYPE}.c
 )
 
+# define the generic definition based on architecture --------------------------
+if (($ENV{CORTEX_TYPE} STREQUAL "CM7") OR
+    ($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
+    if ((${STM32_DEVICE} MATCHES "STM32H743XI") OR
+        (${STM32_DEVICE} MATCHES "STM32H7A3ZI"))
+        set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
+    else ()
+        set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
+    endif ()
+else ()
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
+endif ()
+
 target_compile_definitions(${GenericName}
     PUBLIC
-    ARM$ENV{CORTEX_TYPE}_DP
+    ARMCMFTYPE # defines the single, double or no floating point support
 )
 
 target_link_libraries(${GenericName}
@@ -123,7 +135,7 @@ install(FILES       ${PROJECT_NAME}Config.cmake
 )
 
 # This will set the CPACK tar file as
-# cmsis-v5-<cmsisVersion>-<cortexType>-<compiler>-<compilerVersion>.tar.gz
+# cmsis_v5-<cmsisVersion>-<cortexType>-<compiler>-<compilerVersion>.tar.gz
 set(CPACK_PACKAGE_CHECKSUM SHA3_256)
 set(CPACK_SYSTEM_NAME "$ENV{CORTEX_TYPE}-${CMAKE_C_COMPILER_ID}-${CMAKE_C_COMPILER_VERSION}")
 set(CPACK_BINARY_TGZ "ON")

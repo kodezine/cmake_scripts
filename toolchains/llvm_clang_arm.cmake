@@ -1,9 +1,10 @@
 include(CMakePrintHelpers)
 # check the environment variable for the supported cortex type
-include(${CMAKE_CURRENT_LIST_DIR}/common/checkCORTEX_TYPE.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../utilities/check_cortex_type.cmake)
 
 # set factors based on the cortex type defined
-include(${CMAKE_CURRENT_LIST_DIR}/cortex/$ENV{CORTEX_TYPE}.cmake)
+string(TOLOWER $ENV{CORTEX_TYPE} cmType)
+include(${CMAKE_CURRENT_LIST_DIR}/cortex/${cmType}.cmake)
 
 # Specify location of toolchain root folder
 message(CHECK_START "Searching for LLVM_CLANG_ROOT_FOLDER")

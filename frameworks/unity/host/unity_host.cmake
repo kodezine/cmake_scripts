@@ -1,7 +1,9 @@
-message (STATUS "Unity: Without custom config file")
-
-# this is common for both host and target
-add_subdirectory(${unity_SOURCE_DIR} ${unity_BINARY_DIR})
-
-# include functions for generation of test runner for host
-include(${CMAKE_CURRENT_LIST_DIR}/host.cmake)
+if(EXISTS ${UNITY_PROJECT_CONFIG_FILE})
+    message(STATUS "Unity: Custom configuration file used.")
+    include(${UNITY_PROJECT_CONFIG_FILE})
+else()
+    message(STATUS "Unity: UNITY_PROJECT_CONFIG_FILE not defined.")
+    message(STATUS "Unity: Default host configuration file used.")
+    # include functions for generation of test runner for host
+    include(${CMAKE_CURRENT_LIST_DIR}/host.cmake)
+endif()

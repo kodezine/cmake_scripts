@@ -1,5 +1,5 @@
 include(FetchContent)
-
+include(CMakePrintHelpers)
 # The options to build the Fixtures and Memory for Unity are enabled here.
 set(UNITY_EXTENSION_FIXTURE ON CACHE BOOL "Build unity with fixture")
 set(UNITY_EXTENSION_MEMORY  ON CACHE BOOL "Build unity with memory")
@@ -21,6 +21,8 @@ FetchContent_GetProperties(unity)
 if(NOT unity_POPULATED)
     FetchContent_Populate(unity)
     enable_testing()
+    # this is common for both host and target
+    add_subdirectory(${unity_SOURCE_DIR} ${unity_BINARY_DIR})
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         include(${CMAKE_CURRENT_LIST_DIR}/target/unity_target.cmake)
     else()

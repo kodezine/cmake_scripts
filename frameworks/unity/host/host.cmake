@@ -53,7 +53,7 @@ function(setUnityTestProjectProperties project_name test_dir)
     target_link_libraries(${project_name}
         PUBLIC
             cmock
-            m #math library
+            # m #math library
     )
 
     set_target_properties(${project_name}
@@ -90,7 +90,6 @@ function(setUnityTestProjectStaticLibProperties project_name test_dir)
     target_compile_definitions(${projectlib_name}
         PUBLIC
             UNITY_MAKE_STATIC_GLOBAL    # Used by the compiler_attributes to expose static functions
-            TESTING                     # Used by many older AO for conditional code injection/removal
     )
 
     target_include_directories(${projectlib_name}

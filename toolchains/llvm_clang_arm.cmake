@@ -28,7 +28,7 @@ cmake_path(SET TC_SIZ_EXEC NORMALIZE "${TC_ROOT_FOLDER}/bin/llvm-size${TC_POSTFI
 
 # exclusive for llvm compilers
 if(NOT EXISTS $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name})
-    configure_file(${cmake-toolchains_SOURCE_DIR}/common/.llvm-configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
+    configure_file(${cmake_scripts_SOURCE_DIR}/common/.llvm_configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
 endif()
 # set target compiler triplet (throws error otherwise)
 set(FLAGS "${llvm_config_file}" CACHE STRING "Compiler flags")

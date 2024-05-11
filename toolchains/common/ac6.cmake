@@ -16,7 +16,7 @@ function(setTargetCompileOptions PROJECTNAME)
     target_compile_options( ${${PROJECTNAME}}
     PUBLIC
         -xc
-        -std=c11
+        #-std=c11
         -c
         -fno-rtti
         -funsigned-char

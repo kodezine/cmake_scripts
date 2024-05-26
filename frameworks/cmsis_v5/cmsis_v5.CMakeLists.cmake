@@ -26,55 +26,60 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS ${${PROJECT_NAME}_Device_Headers} ${${PROJECT
 
 target_include_directories(${PROJECT_NAME}
     INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
-        C_STANDARD          11
-        C_STANDARD_REQUIRED ON
-        C_EXTENSIONS        OFF
-        PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
-        EXPORT_NAME         framework
+    C_STANDARD              11
+    C_STANDARD_REQUIRED     ON
+    C_EXTENSIONS            OFF
+    PUBLIC_HEADER           "${${PROJECT_NAME}_PUBLIC_HEADERS}"
+    EXPORT_NAME             framework
 )
 
 target_compile_options(${PROJECT_NAME}
     INTERFACE
-        $<$<C_COMPILER_ID:Clang>:-Wcast-align
-                                 -Wcast-qual
-                                 -Wconversion
-                                 -Wexit-time-destructors
-                                 -Wglobal-constructors
-                                 #-Wmissing-noreturn
-                                 -Wmissing-prototypes
-                                 -Wno-missing-braces
-                                 -Wold-style-cast
-                                 -Wshadow
-                                 -Wweak-vtables
-                                 #-Werror
-                                 -Wall>
-        $<$<C_COMPILER_ID:GNU>:-Waddress
-                               -Waggregate-return
-                               -Wformat-nonliteral
-                               -Wformat-security
-                               -Wformat
-                               -Winit-self
-                               -Wmissing-declarations
-                               -Wmissing-include-dirs
-                               -Wno-multichar
-                               -Wno-parentheses
-                               -Wno-type-limits
-                               -Wno-unused-parameter
-                               -Wunreachable-code
-                               -Wwrite-strings
-                               -Wpointer-arith
-                               #-Werror
-                               -Wall>
-       $<$<C_COMPILER_ID:MSVC>:/Wall>
+    # Clang based compiler options
+    $<$<C_COMPILER_ID:Clang>:
+    -Wcast-align
+    -Wcast-qual
+    -Wconversion
+    -Wexit-time-destructors
+    -Wglobal-constructors
+    #-Wmissing-noreturn
+    -Wmissing-prototypes
+    -Wno-missing-braces
+    -Wold-style-cast
+    -Wshadow
+    -Wweak-vtables
+    #-Werror
+    -Wall>
+    # GCC based compiler options
+    $<$<C_COMPILER_ID:GNU>:
+    -Waddress
+    -Waggregate-return
+    -Wformat-nonliteral
+    -Wformat-security
+    -Wformat
+    -Winit-self
+    -Wmissing-declarations
+    -Wmissing-include-dirs
+    -Wno-multichar
+    -Wno-parentheses
+    -Wno-type-limits
+    -Wno-unused-parameter
+    -Wunreachable-code
+    -Wwrite-strings
+    -Wpointer-arith
+    #-Werror
+    -Wall>
+    # Microsoft Visual Code based compiler options
+    $<$<C_COMPILER_ID:MSVC>:/Wall>
 )
 ## Sub project ---------------------------------------------------------------
 

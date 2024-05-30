@@ -1,8 +1,8 @@
 include(CMakePrintHelpers)
 include(FetchContent)
 
-set(libName "cmsis_v5")
-set(GITHUB_BRANCH_${libName} "5.9.0")
+set(libName "cmsis_v6")
+set(GITHUB_BRANCH_${libName} "6.1.0")
 message(STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
 
 if (DEFINED PRECOMPILED_TAG_${libName})

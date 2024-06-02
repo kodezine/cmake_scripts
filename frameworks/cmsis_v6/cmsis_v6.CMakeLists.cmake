@@ -68,6 +68,17 @@ set_target_properties(${PROJECT_NAME}
         EXPORT_NAME         framework
 )
 
+
+# define the generic definition based on architecture --------------------------
+if (($ENV{CORTEX_TYPE} STREQUAL "CM7"))
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
+elseif (($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
+else ()
+    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
+endif ()
+cmake_print_variables(ARMCMFTYPE)
+
 target_compile_options(${PROJECT_NAME}
     INTERFACE
         $<$<C_COMPILER_ID:Clang>:-Wcast-align
@@ -108,9 +119,18 @@ write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
     COMPATIBILITY   SameMajorVersion
 )
 
+## Target installation
+install(TARGETS     ${PROJECT_NAME}
+    EXPORT          ${PROJECT_NAME}Targets
+    ARCHIVE         DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY         DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    COMPONENT       library
+)
+
 ## Target's cmake files: targets export
-install(TARGETS ${PROJECT_NAME}
-    EXPORT      ${PROJECT_NAME}Targets
+install(EXPORT      ${PROJECT_NAME}Targets
+    NAMESPACE       ${PROJECT_NAME}::
     DESTINATION     ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 

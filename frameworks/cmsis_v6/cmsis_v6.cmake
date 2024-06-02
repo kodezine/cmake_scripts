@@ -23,7 +23,7 @@ else ()
     FetchContent_Declare(
         ${libName}                             # Recommendation: Stick close to the original name.
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-        URL https://github.com/ARM-software/CMSIS_5/archive/refs/tags/${GITHUB_BRANCH_${libName}}.tar.gz
+        URL https://github.com/ARM-software/CMSIS_6/archive/refs/tags/v${GITHUB_BRANCH_${libName}}.tar.gz
     )
     FetchContent_GetProperties(${libName})
     if (NOT ${libName}_POPULATED)

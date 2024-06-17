@@ -1,19 +1,19 @@
-include(CMakePrintHelpers)
+include (CMakePrintHelpers)
 
 # Function to show compiler version
-function(showCompilerVersion)
-    execute_process(COMMAND "${CMAKE_C_COMPILER}" -dumpversion
+function (showCompilerVersion)
+    execute_process (COMMAND "${CMAKE_C_COMPILER}" -dumpversion
         OUTPUT_VARIABLE CVERSION
         ERROR_VARIABLE CVERSION
     )
-    set(COMPILERVERSION ${CVERSION} PARENT_SCOPE)
-    cmake_print_variables(CVERSION)
-    cmake_print_variables(CMAKE_C_COMPILER)
-endfunction(showCompilerVersion)
+    set (COMPILERVERSION ${CVERSION} PARENT_SCOPE)
+    cmake_print_variables (CVERSION)
+    cmake_print_variables (CMAKE_C_COMPILER)
+endfunction (showCompilerVersion)
 
 # Function to set compiler options (Private)
-function(setTargetCompileOptions PROJECTNAME)
-    target_compile_options( ${${PROJECTNAME}}
+function (setTargetCompileOptions PROJECTNAME)
+    target_compile_options (${${PROJECTNAME}}
     PUBLIC
     ${COMPILER_SPECIFIC_CFLAGS}
     # -std=c11
@@ -38,31 +38,50 @@ function(setTargetCompileOptions PROJECTNAME)
     -Wno-reserved-identifier
     "$<$<CONFIG:Debug>:-O1>"                    # Optimized for debugging
     )
-endfunction(setTargetCompileOptions)
+endfunction (setTargetCompileOptions)
 
 # Function to set linker options (Private)
-function(setTargetLinkOptions PROJECTNAME)
-    target_link_options( ${${PROJECTNAME}}
+function (setTargetLinkOptions PROJECTNAME)
+    target_link_options (${${PROJECTNAME}}
         PUBLIC
         ${COMPILER_SPECIFIC_LD_FLAGS}
-        -Wl,-Map=${${PROJECTNAME}}.map -Xlinker --cref
+        -Wl,-Map=${${PROJECTNAME}}.map.txt -Xlinker --cref
         -L${${${PROJECTNAME}}_LLVM_LINKER_PATH}
         -T${${${PROJECTNAME}}_LLVM_LINKER_SCRIPT}
     )
-    message(STATUS "Linking with ${${${PROJECTNAME}}_LLVM_LINKER_PATH}/${${${PROJECTNAME}}_LLVM_LINKER_SCRIPT}")
-    add_custom_command(
+    message (STATUS "Linking with ${${${PROJECTNAME}}_LLVM_LINKER_PATH}/${${${PROJECTNAME}}_LLVM_LINKER_SCRIPT}")
+    add_custom_command (
         TARGET ${${PROJECTNAME}} POST_BUILD
         COMMAND ${CMAKE_SIZE} --format=berkeley $<TARGET_FILE:${${PROJECTNAME}}>
     )
-    add_custom_command(
+    add_custom_command (
         TARGET ${${PROJECTNAME}} POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -O ihex
         $<TARGET_FILE:${${PROJECTNAME}}> ${${PROJECTNAME}}.hex
     )
-    add_custom_command(
+    add_custom_command (
         TARGET ${${PROJECTNAME}} POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -O binary
         $<TARGET_FILE:${${PROJECTNAME}}> ${${PROJECTNAME}}.bin
+    )
+
+    add_custom_command (
+        TARGET ${${PROJECTNAME}} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Object file: $<TARGET_FILE_DIR:${${PROJECTNAME}}>/${${PROJECTNAME}}.obj.txt"
+        COMMAND ${CMAKE_LLVM_OBJDUMP} --dwarf=frames
+        $<TARGET_FILE:${${PROJECTNAME}}> > ${${PROJECTNAME}}.obj.txt
+    )
+    add_custom_command (
+        TARGET ${${PROJECTNAME}} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Symbol file: $<TARGET_FILE_DIR:${${PROJECTNAME}}>/${${PROJECTNAME}}.nm.txt"
+        COMMAND ${CMAKE_LLVM_NM} --print-size --size-sort --line-numbers
+        $<TARGET_FILE:${${PROJECTNAME}}> > ${${PROJECTNAME}}.nm.txt
+    )
+    add_custom_command (
+        TARGET ${${PROJECTNAME}} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Dwarf file : $<TARGET_FILE_DIR:${${PROJECTNAME}}>/${${PROJECTNAME}}.dwarf.txt"
+        COMMAND ${CMAKE_LLVM_READOBJ} -a
+        $<TARGET_FILE:${${PROJECTNAME}}> > ${${PROJECTNAME}}.dwarf.txt
     )
 endfunction(setTargetLinkOptions)
 

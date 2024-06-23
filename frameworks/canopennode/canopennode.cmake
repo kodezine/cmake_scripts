@@ -14,7 +14,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(canopennode-stm32)
 
 if(NOT canopennode-stm32_POPULATED)
-    FetchContent_Populate(canopennode-stm32)
+    FetchContent_MakeAvailable(canopennode-stm32)
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/CMakeLists.cmake ${canopennode-stm32_SOURCE_DIR}/CMakeLists.txt COPYONLY)

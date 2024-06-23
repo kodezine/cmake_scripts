@@ -15,7 +15,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(cmock)
 
 if(NOT cmock_POPULATED)
-    FetchContent_Populate(cmock)
+    FetchContent_MakeAvailable(cmock)
 
     configure_file(${CMAKE_CURRENT_LIST_DIR}/CMakeLists.cmake ${cmock_SOURCE_DIR}/CMakeLists.txt)
     # Library libcomock.a is in the /build/_deps/cmock-build directory

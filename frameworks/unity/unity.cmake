@@ -19,7 +19,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(unity)
 
 if(NOT unity_POPULATED)
-    FetchContent_Populate(unity)
+    FetchContent_MakeAvailable(unity)
     enable_testing()
     # this is common for both host and target
     add_subdirectory(${unity_SOURCE_DIR} ${unity_BINARY_DIR})

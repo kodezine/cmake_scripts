@@ -16,7 +16,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(qpc)
 
 if(NOT qpc_POPULATED)
-    FetchContent_Populate(qpc)
+    FetchContent_MakeAvailable(qpc)
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/CMakeLists.cmake ${qpc_SOURCE_DIR}/CMakeLists.txt COPYONLY)

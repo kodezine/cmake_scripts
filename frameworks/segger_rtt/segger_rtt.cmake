@@ -18,7 +18,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(segger_rtt)
 
 if(NOT segger_rtt_POPULATED)
-    FetchContent_Populate(segger_rtt)
+    FetchContent_MakeAvailable(segger_rtt)
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/CMakeLists.cmake ${segger_rtt_SOURCE_DIR}/CMakeLists.txt COPYONLY)

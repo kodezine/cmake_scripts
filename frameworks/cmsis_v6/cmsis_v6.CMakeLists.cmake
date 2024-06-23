@@ -23,7 +23,7 @@ if (NOT DEFINED ${libName})
     FetchContent_GetProperties(cmake_scripts)
 
     if(NOT cmake_scripts_POPULATED)
-        FetchContent_Populate(cmake_scripts)
+        FetchContent_MakeAvailable(cmake_scripts)
     endif()
 endif ()
 

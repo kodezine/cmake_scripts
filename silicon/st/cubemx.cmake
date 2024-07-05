@@ -1,16 +1,10 @@
 include(CMakePrintHelpers)
 include(FetchContent)
-# List of supported devices, add new family, device, etc. here.
-set(LIST_SUPPORTED_STM32_TYPES
-    "F0"
-    "H7"
-)
-set(LIST_SUPPORTED_STM32_DEVICE
-    "STM32F031x6"
-    "STM32F072xB"
-    "STM32H7A3xxQ"
-    "STM32H743xx"
-)
+
+# include list of all supported STM32 Types
+include(${CMAKE_CURRENT_LIST_DIR}/stm32types.cmake)
+# include list of all supported STM32 Devices
+include(${CMAKE_CURRENT_LIST_DIR}/stm32devices.cmake)
 
 set(libName "cubemx")
 

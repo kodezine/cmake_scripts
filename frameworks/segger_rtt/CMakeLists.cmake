@@ -3,7 +3,7 @@ include(CMakePrintHelpers)
 include(FetchContent)
 
 project(
-    segger_rtt
+    ${libName}
     VERSION     0.0.1
     LANGUAGES   C ASM CXX
     DESCRIPTION "Segger RTT based target debug output and input library"
@@ -18,67 +18,67 @@ else()
 endif()
 
 # Main target ------------------------------------------------------------------
-add_library(${PROJECT_NAME} STATIC)
-add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
+add_library(${libName} STATIC)
+add_library(${libName}::framework ALIAS ${libName})
 
 
 # Includes ---------------------------------------------------------------------
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-set(segger_rtt_SOURCES
-    #${segger_rtt_SOURCE_DIR}/RTT/SEGGER_RTT_ASM_ARMv7M.S
-    ${segger_rtt_SOURCE_DIR}/RTT/SEGGER_RTT_printf.c
-    ${segger_rtt_SOURCE_DIR}/RTT/SEGGER_RTT.c
+set(${libName}_SOURCES
+    #${${libName}_SOURCE_DIR}/RTT/SEGGER_RTT_ASM_ARMv7M.S
+    ${${libName}_SOURCE_DIR}/RTT/SEGGER_RTT_printf.c
+    ${${libName}_SOURCE_DIR}/RTT/SEGGER_RTT.c
 
-    ${segger_rtt_SOURCE_DIR}/Syscalls/SEGGER_RTT_Syscalls_${SYSCALL_COMPILER_ID}.c
+    ${${libName}_SOURCE_DIR}/Syscalls/SEGGER_RTT_Syscalls_${SYSCALL_COMPILER_ID}.c
 )
 
-target_sources(${PROJECT_NAME}
+target_sources(${libName}
     PRIVATE
-    ${segger_rtt_SOURCES}
+    ${${libName}_SOURCES}
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${libName}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Config>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/RTT>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
 )
 
-set(${PROJECT_NAME}_PUBLIC_HEADERS
+set(${libName}_PUBLIC_HEADERS
         RTT/SEGGER_RTT.h
         Config/SEGGER_RTT_Conf.h
 )
 
 # Add target compile options based on toolchain
-set(libName ${PROJECT_NAME})
+set(libName ${libName})
 setTargetCompileOptions(libName)
 
 
-write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+write_basic_package_version_file(${libName}ConfigVersion.cmake
     VERSION       ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
 ## Target installation
-install(TARGETS   ${PROJECT_NAME}
-    EXPORT        ${PROJECT_NAME}Targets
+install(TARGETS   ${libName}
+    EXPORT        ${libName}Targets
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
     COMPONENT     library
 )
 
 ## Target's cmake files: targets export
-install(EXPORT  ${PROJECT_NAME}Targets
-    NAMESPACE   ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+install(EXPORT  ${libName}Targets
+    NAMESPACE   ${libName}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
 )
 
 ## Target's cmake files: config and version config for find_package()
-install(FILES   ${PROJECT_NAME}Config.cmake
-                ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+install(FILES   ${libName}Config.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
 )

@@ -1,35 +1,11 @@
-if (NOT DEFINED ${libName})
-    set(libName cmsis_v6)
-    # Minimum version for cmake compatiblity
-    cmake_minimum_required(VERSION 3.29)
-    include(CMakePrintHelpers)
-    include(FetchContent)
+include(CMakePrintHelpers)
+include(FetchContent)
 
-    # Set branch names for the sub modules dependencies
-    set(GITHUB_BRANCH_TOOLCHAIN "HEAD" CACHE STRING "git SHA for CMake Toolchain")
-    # set the location of all fetched repos
-    set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/_deps")
-    # show limited messages while cloning git repos
-    set(FETCHCONTENT_QUIET ON)
+set(libName "cmsis_v6")
 
-    cmake_print_variables(GITHUB_BRANCH_TOOLCHAIN)
-    FetchContent_Declare(
-        cmake_scripts                             # Recommendation: Stick close to the original name.
-        GIT_REPOSITORY  git@github.com:kodezine/cmake_scripts.git
-        GIT_TAG         ${GITHUB_BRANCH_TOOLCHAIN}
-    )
-
-    # pre-fetch the toolchain repository as the first job before project configuration
-    FetchContent_GetProperties(cmake_scripts)
-
-    if(NOT cmake_scripts_POPULATED)
-        FetchContent_MakeAvailable(cmake_scripts)
-    endif()
-endif ()
-
-if (NOT DEFINED ${GITHUB_BRANCH_${libName}})
+if(NOT DEFINED ${GITHUB_BRANCH_${libName}})
     set(GITHUB_BRANCH_${libName} "6.1.0")
-endif ()
+endif()
 
 project(${libName}
     VERSION ${GITHUB_BRANCH_${libName}}
@@ -38,8 +14,8 @@ project(${libName}
 )
 
 # Main target ------------------------------------------------------------------
-add_library(${PROJECT_NAME} INTERFACE)
-#add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
+add_library(${libName} INTERFACE)
+add_library(${libName}::framework ALIAS ${libName})
 
 # Includes ---------------------------------------------------------------------
 include(GNUInstallDirs)
@@ -50,21 +26,21 @@ file(GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Inclu
 file(GLOB ${libName}_Core_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/*.h)
 set(${libName}_PUBLIC_HEADERS ${${libName}_Device_Headers} ${${libName}_Core_Headers})
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${libName}
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/m-profile>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
 )
 
 
-set_target_properties(${PROJECT_NAME}
+set_target_properties(${libName}
     PROPERTIES
         C_STANDARD          11
         C_STANDARD_REQUIRED ON
         C_EXTENSIONS        OFF
-        PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
+        PUBLIC_HEADER       "${${libName}_PUBLIC_HEADERS}"
         EXPORT_NAME         framework
 )
 
@@ -79,7 +55,7 @@ else ()
 endif ()
 cmake_print_variables(ARMCMFTYPE)
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(${libName}
     INTERFACE
         $<$<C_COMPILER_ID:Clang>:-Wcast-align
                                  -Wcast-qual
@@ -114,30 +90,30 @@ target_compile_options(${PROJECT_NAME}
        $<$<C_COMPILER_ID:MSVC>:/Wall>
 )
 
-write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+write_basic_package_version_file(${libName}ConfigVersion.cmake
     VERSION         ${PROJECT_VERSION}
     COMPATIBILITY   SameMajorVersion
 )
 
 ## Target installation
-install(TARGETS     ${PROJECT_NAME}
-    EXPORT          ${PROJECT_NAME}Targets
+install(TARGETS     ${libName}
+    EXPORT          ${libName}Targets
     ARCHIVE         DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY         DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
     COMPONENT       library
 )
 
 ## Target's cmake files: targets export
-install(EXPORT      ${PROJECT_NAME}Targets
-    NAMESPACE       ${PROJECT_NAME}::
-    DESTINATION     ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+install(EXPORT      ${libName}Targets
+    NAMESPACE       ${libName}::
+    DESTINATION     ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
 )
 
 ## Target's cmake files: config and version config for find_package()
-install(FILES       ${PROJECT_NAME}Config.cmake
-                    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    DESTINATION     ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+install(FILES       ${libName}Config.cmake
+                    ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
+    DESTINATION     ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
 )
 
 # This will set the CPACK tar file as

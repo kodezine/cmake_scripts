@@ -1,8 +1,6 @@
 if (${PROJECT_NAME} STREQUAL cubemx)
 
 else ()
-    cmake_minimum_required(VERSION 3.27)
-
     project(
         cubemx
         VERSION ${GITHUB_BRANCH_cubemx}

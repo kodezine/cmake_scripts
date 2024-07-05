@@ -1,5 +1,5 @@
 ## Minimum version for cmake compatiblity
-cmake_minimum_required(VERSION 3.25)
+
 include(CMakePrintHelpers)
 include(FetchContent)
 

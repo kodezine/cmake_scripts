@@ -13,7 +13,11 @@ set(LIST_SUPPORTED_STM32_DEVICE
 )
 
 set(libName "cubemx")
-set(GITHUB_BRANCH_${libName} "1.11.1")
+
+if (NOT DEFINED GITHUB_BRANCH_${libName})
+    set(GITHUB_BRANCH_${libName} "1.11.1")
+endif ()
+
 message(STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
 # precompilation
 if (DEFINED PRECOMPILED_TAG_${libName})
@@ -59,7 +63,9 @@ else ()
     FetchContent_Declare(
         ${libName}${LOWERCASE_STM32_TYPE}                              # Recommendation: Stick close to the original name.
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-        URL https://github.com/STMicroelectronics/${STM32CubeXX}/archive/refs/tags/v${GITHUB_BRANCH_${libName}}.tar.gz
+        GIT_REPOSITORY  https://github.com/STMicroelectronics/${STM32CubeXX}
+        GIT_TAG         v${GITHUB_BRANCH_${libName}}
+        GIT_SHALLOW     TRUE
     )
     FetchContent_GetProperties(${libName}${LOWERCASE_STM32_TYPE})
     if(NOT ${libName}${LOWERCASE_STM32_TYPE}_POPULATED)

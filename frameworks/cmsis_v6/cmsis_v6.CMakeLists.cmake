@@ -39,7 +39,7 @@ project(${libName}
 
 # Main target ------------------------------------------------------------------
 add_library(${PROJECT_NAME} INTERFACE)
-add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
+#add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
 
 # Includes ---------------------------------------------------------------------
 include(GNUInstallDirs)

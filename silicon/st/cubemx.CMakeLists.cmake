@@ -3,24 +3,6 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(CMakePrintHelpers)
 
-if((DEFINED cmsis_v5_CORE_INCLUDE_PATH) AND
-   (DEFINED cmsis_v5_DEVICE_INCLUDE_PATH))
-    set(cmsis_CORE_INCLUDE_PATH ${cmsis_v5_CORE_INCLUDE_PATH})
-    set(cmsis_DEVICE_INCLUDE_PATH ${cmsis_v5_DEVICE_INCLUDE_PATH})
-    set(cmsis "cmsis_v5")
-    set(libName ${libName}_${cmsis})
-    message(STATUS "${libName}: CMSIS v5 is found")
-else()
-    if((DEFINED cmsis_v6_CORE_INCLUDE_PATH) AND
-        (DEFINED cmsis_v6_DEVICE_INCLUDE_PATH))
-        set(cmsis_CORE_INCLUDE_PATH ${cmsis_v6_CORE_INCLUDE_PATH})
-        set(cmsis_DEVICE_INCLUDE_PATH ${cmsis_v6_DEVICE_INCLUDE_PATH})
-        set(cmsis "cmsis_v6")
-        set(libName ${libName}_${cmsis})
-        message(STATUS "${libName}: CMSIS v6 is found")
-    endif()
-endif()
-
 # Check for valid paths to Cube Drivers used in this file
 if ((NOT EXISTS ${st_CMSIS_DIR}) OR
     (NOT EXISTS ${st_HAL_Driver_DIR}))

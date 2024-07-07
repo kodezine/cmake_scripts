@@ -3,10 +3,10 @@ include (FetchContent)
 
 set (libName "stm32cubemx")
 
-# include list of all supported STM32 Types
-include (${CMAKE_CURRENT_LIST_DIR}/stm32types.cmake)
-# include list of all supported STM32 Devices
+# include list of all supported STM32 Devices, checks if the valid device is defined
 include (${CMAKE_CURRENT_LIST_DIR}/stm32devices.cmake)
+# include list of all supported STM32 Types, lower case STM32_TYPE from STM32_DEVICE
+include (${CMAKE_CURRENT_LIST_DIR}/stm32types.cmake)
 # include the selection of cmsis used for this build
 include (${CMAKE_CURRENT_LIST_DIR}/${libName}.cmsis.cmake)
 
@@ -19,28 +19,15 @@ message (STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
 if (DEFINED PRECOMPILED_TAG_${libName})
     include (${CMAKE_CURRENT_LIST_DIR}/${libName}.precompiled.cmake)
 else ()
-    message (STATUS "${libName}: Compiles from source and ${cmsis}")
     ### Determine if valid definitions exist for build from sources
     #1# overarching HAL and CMSIS driver repo fetching mechanism for STM32 microcontrollers
-    if ((NOT DEFINED STM32_TYPE) OR
-        (NOT DEFINED STM32_DEVICE) OR
-        (NOT DEFINED ENV{CORTEX_TYPE}))
-        message (FATAL_ERROR "${libName}: Needs a valid STM32 Family type and device defined to work with.")
+    if (NOT DEFINED ENV{CORTEX_TYPE})
+        message (FATAL_ERROR "${libName}: needs a cortex type defined")
     endif ()
 
     #2# the variable value should be always upper case
     string (TOUPPER ${STM32_TYPE} UPPERCASE_STM32_TYPE)
     string (TOLOWER ${STM32_TYPE} LOWERCASE_STM32_TYPE)
-
-    #3# the stm32_type should be one from supported values
-    if (NOT (${UPPERCASE_STM32_TYPE} IN_LIST LIST_SUPPORTED_STM32_TYPES))
-        message (FATAL_ERROR "${libName}: Does not support the provided STM32_TYPE: ${STM32_TYPE}")
-    endif ()
-
-    #4# determine a supported stm32 device
-    if (NOT (${STM32_DEVICE} IN_LIST LIST_SUPPORTED_STM32_DEVICE))
-        message (FATAL_ERROR "${libName}: Does not support the provided STM32_DEVICE: ${STM32_DEVICE}")
-    endif ()
 
     #5# use the device family to set a cache variable for ARM Cortex Mx family here
     set (ARMCMSIS_DEVICE "ARM$ENV{CORTEX_TYPE}" CACHE STRING "CMSIS Arm Cortex Device type to match folder" FORCE)
@@ -56,16 +43,13 @@ else ()
         GIT_SHALLOW                 true
     )
     FetchContent_GetProperties (${libName})
-#    if (NOT ${libName}_POPULATED)
+    if (NOT ${libName}_POPULATED)
         FetchContent_MakeAvailable (${libName})
-#    endif ()
+    endif ()
 
     configure_file (${CMAKE_CURRENT_LIST_DIR}/${libName}.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake COPYONLY)
     configure_file (${CMAKE_CURRENT_LIST_DIR}/${libName}.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
-    set (st_CMSIS_DIR "${${libName}_SOURCE_DIR}/Drivers/CMSIS" CACHE PATH "Path to STM32CubeXX CMSIS folder")
-    set (st_HAL_Driver_DIR "${${libName}_SOURCE_DIR}/Drivers/STM32${UPPERCASE_STM32_TYPE}xx_HAL_Driver" CACHE PATH "Path to STM32CubeXX Drivers folder")
-    set (stm32_hal stm32${LOWERCASE_STM32_TYPE}xx_hal CACHE STRING "Prefix for HAL files")
-    # cmake_print_variables (stm32_hal st_CMSIS_DIR st_HAL_Driver_DIR)
+
     add_subdirectory (${${libName}_SOURCE_DIR})
     # cmake_print_variables (libName LOWERCASE_STM32_TYPE)
 endif ()

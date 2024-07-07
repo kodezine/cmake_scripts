@@ -3,24 +3,40 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(CMakePrintHelpers)
 
-# Check for valid paths to Cube Drivers used in this file
-if ((NOT EXISTS ${st_CMSIS_DIR}) OR
-    (NOT EXISTS ${st_HAL_Driver_DIR}))
-    message(FATAL_ERROR "${libName}: Can only compile if the STM32CubeXX is cloned from STMicroelectronics GitHub")
-endif()
+if (NOT DEFINED ${libName})
+    set(libName stm32cubemx)
+endif ()
 
-# the configuration of hal should be available in all cases
-# if it is not provided, we use ALL the available drivers in the default configuration
-if(NOT DEFINED STM32_HAL_CONFIGURATION)
-    message(STATUS "${libName}: Will use all available HAL layer artefacts")
-    configure_file(${st_HAL_Driver_DIR}/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf_template.h ${st_HAL_Driver_DIR}/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf.h COPYONLY)
-else()
-    message(STATUS "${libName}: Will use ${STM32_HAL_CONFIGURATION}")
-    configure_file(${STM32_HAL_CONFIGURATION} ${st_HAL_Driver_DIR}/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf.h COPYONLY)
-endif()
+project(${libName}
+    VERSION ${GITHUB_BRANCH_${libName}}
+    LANGUAGES C
+    DESCRIPTION "STM32CubeMx library for devices"
+)
 
 add_library(${libName} STATIC)
 add_library(${libName}::framework ALIAS ${libName})
+
+# the configuration of hal should be available in all cases
+# if it is not provided, we use ALL the available drivers in the default configuration
+if (EXISTS STM32CubeMxConfigHeaderFile)
+    message (STATUS "${libName}: Will use ${STM32CubeMxConfigHeaderFile}")
+    configure_file (${STM32CubeMxConfigHeaderFile} ${${libName}_SOURCE_DIR}/Drivers/STM32${UPPERCASE_STM32_TYPE}xx_HAL_Driver/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf.h COPYONLY)
+else ()
+    message (STATUS "${libName}: Will use all available HAL layer artefacts")
+    configure_file (${${libName}_SOURCE_DIR}/Drivers/STM32${UPPERCASE_STM32_TYPE}xx_HAL_Driver/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf_template.h ${${libName}_SOURCE_DIR}/Drivers/STM32${UPPERCASE_STM32_TYPE}xx_HAL_Driver/Inc/stm32${LOWERCASE_STM32_TYPE}xx_hal_conf.h COPYONLY)
+endif ()
+
+set (st_CMSIS_DIR ${${libName}_SOURCE_DIR}/Drivers/CMSIS CACHE PATH "Path to STM32CubeXX CMSIS folder" FORCE)
+set (st_HAL_Driver_DIR ${${libName}_SOURCE_DIR}/Drivers/STM32${UPPERCASE_STM32_TYPE}xx_HAL_Driver CACHE PATH "Path to STM32CubeXX Drivers folder" FORCE)
+set (stm32_hal stm32${LOWERCASE_STM32_TYPE}xx_hal CACHE STRING "Prefix for HAL files")
+cmake_print_variables (st_CMSIS_DIR st_HAL_Driver_DIR)
+if (DEFINED cmsis)
+else ()
+    set (cmsis_CORE_INCLUDE_PATH "${st_CMSIS_DIR}/Core/Include" CACHE PATH "Path to STM32CubeXX CMSIS Core Includes")
+    set (cmsis_DEVICE_INCLUDE_PATH "${st_CMSIS_DIR}/Device/Include" CACHE PATH "Path to STM32CubeXX CMSIS Device Includes")
+endif ()
+cmake_print_variables(cmsis_CORE_INCLUDE_PATH)
+message (STATUS "${libName}: compiles from source and ${cmsis_CORE_INCLUDE_PATH}")
 
 # Get the STM32 HAL and CMSIS drivers from STM GitHub pages
 set(st_CMSIS_DEVICE_INCLUDE_DIR "${st_CMSIS_DIR}/Device/ST/STM32${UPPERCASE_STM32_TYPE}xx/Include")
@@ -68,7 +84,7 @@ target_include_directories(${libName}
 target_compile_definitions(${libName}
     PUBLIC
         USE_HAL_DRIVER
-        USE_FULL_LL_DRIVER
+        # USE_FULL_LL_DRIVER
         ${STM32_DEVICE}
 )
 

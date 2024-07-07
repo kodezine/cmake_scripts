@@ -16,7 +16,6 @@
                 "FETCHCONTENT_UPDATES_DISCONNECTED": "OFF",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install/${presetName}",
                 "GITHUB_BRANCH_TOOLCHAIN": "HEAD",
-                "STM32_TYPE": "f0",
                 "STM32_DEVICE": "STM32F031x6",
                 "JLINK_DEVICE": "STM32F031K6"
             }

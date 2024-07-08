@@ -7,14 +7,14 @@ include (CMakePrintHelpers)
 
 if ((DEFINED cmsis_v5_CORE_INCLUDE_PATH) AND
    (DEFINED cmsis_v5_DEVICE_INCLUDE_PATH))
-    set (cmsis_CORE_INCLUDE_PATH ${cmsis_v5_CORE_INCLUDE_PATH})
-    set (cmsis_DEVICE_INCLUDE_PATH ${cmsis_v5_DEVICE_INCLUDE_PATH})
+    set (cmsis_CORE_INCLUDE_PATH    ${cmsis_v5_CORE_INCLUDE_PATH})
+    set (cmsis_DEVICE_INCLUDE_PATH  ${cmsis_v5_DEVICE_INCLUDE_PATH})
     set (cmsis "cmsis_v5")
     message (STATUS "${libName}: ${cmsis} is found")
 elseif ((DEFINED cmsis_v6_CORE_INCLUDE_PATH) AND
         (DEFINED cmsis_v6_DEVICE_INCLUDE_PATH))
-    set (cmsis_CORE_INCLUDE_PATH ${cmsis_v6_CORE_INCLUDE_PATH})
-    set (cmsis_DEVICE_INCLUDE_PATH ${cmsis_v6_DEVICE_INCLUDE_PATH})
+    set (cmsis_CORE_INCLUDE_PATH    ${cmsis_v6_CORE_INCLUDE_PATH})
+    set (cmsis_DEVICE_INCLUDE_PATH  ${cmsis_v6_DEVICE_INCLUDE_PATH})
     set (cmsis "cmsis_v6")
     message (STATUS "${libName}: ${cmsis} is found")
 else ()

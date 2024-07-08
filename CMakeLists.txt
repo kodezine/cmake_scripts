@@ -37,8 +37,8 @@ project(
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
     # Include dependencies from repositories ---------------------------------------
-    #include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v5/cmsis_v5.cmake)
-    #include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v6/cmsis_v6.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v5/cmsis_v5.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v6/cmsis_v6.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/segger_rtt/segger_rtt.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/silicon/st/stm32cubemx.cmake)
 else()

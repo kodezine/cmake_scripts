@@ -37,7 +37,7 @@ if (NOT EXISTS $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name})
     configure_file (${CMAKE_CURRENT_SOURCE_DIR}/toolchains/common/.llvm_configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
 endif ()
 # set target compiler triplet (throws error otherwise)
-set (FLAGS "${llvm_config_file}" CACHE STRING "Compiler flags")
+set (FLAGS "${llvm_config_file}"       CACHE STRING "Compiler flags")
 set (ASM_FLAGS                       "-x assembler-with-cpp")
 
 set (CMAKE_C_COMPILER                ${TC___C_EXEC} ${FLAGS})

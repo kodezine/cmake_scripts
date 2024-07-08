@@ -22,7 +22,10 @@ include(CMakePackageConfigHelpers)
 # set public headers as a globbed function
 file(GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include/*.h)
 file(GLOB ${libName}_Core_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/*.h)
-set(${libName}_PUBLIC_HEADERS ${${libName}_Device_Headers} ${${libName}_Core_Headers})
+set(${libName}_PUBLIC_HEADERS
+    ${${libName}_Device_Headers}
+    ${${libName}_Core_Headers}
+)
 
 target_include_directories(${libName}
     INTERFACE
@@ -31,7 +34,6 @@ target_include_directories(${libName}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
 )
-
 
 set_target_properties(${libName}
     PROPERTIES

@@ -34,7 +34,7 @@ cmake_path (SET TC_ROB_EXEC NORMALIZE "${TC_ROOT_FOLDER}/bin/llvm-readobj${TC_PO
 
 # exclusive for llvm compilers
 if (NOT EXISTS $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name})
-    configure_file (${cmake_scripts_SOURCE_DIR}/toolchains/common/.llvm_configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/toolchains/common/.llvm_configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
 endif ()
 # set target compiler triplet (throws error otherwise)
 set (FLAGS "${llvm_config_file}" CACHE STRING "Compiler flags")

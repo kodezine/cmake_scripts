@@ -10,7 +10,7 @@ While care has been taken to make the CMake scripts as modern as possible.
 This folder contains different frameworks like:
 * [cmsis_v5](https://arm-software.github.io/CMSIS_5/General/html/index.html)
 * [cmsis_v6](https://github.com/ARM-software/CMSIS_6)
-* [cmsis_dsp](https://github.com/ARM-software/CMSIS-DSP)
+* [cmsis-dsp](https://github.com/ARM-software/CMSIS-DSP)
 * [unity](http://www.throwtheswitch.org/unity)
 * [cmock](http://www.throwtheswitch.org/cmock)
 * [segger_rtt](https://wiki.segger.com/RTT)

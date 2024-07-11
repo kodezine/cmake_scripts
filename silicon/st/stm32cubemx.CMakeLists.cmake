@@ -34,9 +34,6 @@ if (cmsis STREQUAL "")
     file (GLOB cmsis_INCLUDE_HEADERS    ${st_cmsis_PATH}/Include/*.h)
     set (cmsis_INCLUDE_PATH             ${st_cmsis_PATH}/Include)
     set (cmsis_CORE_INCLUDE_PATH        ${st_cmsis_PATH}/Core/Include)
-    message (STATUS "Sohal ${cmsis_INCLUDE_PATH} ${cmsis_CORE_INCLUDE_PATH}")
-else ()
-    message (STATUS "Patel ${cmsis_INCLUDE_PATH} ${cmsis_CORE_INCLUDE_PATH}")
 endif ()
 
 # stm32 device specific headers

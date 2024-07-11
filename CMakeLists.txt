@@ -27,6 +27,7 @@ endif ()
 #if(NOT cmake_scripts_POPULATED)
 #    FetchContent_MakeAvailable(cmake_scripts)
 #endif()
+set (cmake_scripts_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 project (
     static_libs
@@ -37,12 +38,11 @@ project (
 
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
     # Include dependencies from repositories ---------------------------------------
-    include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v5/cmsis_v5.cmake)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v6/cmsis_v6.cmake)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/frameworks/segger_rtt/segger_rtt.cmake)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/silicon/st/stm32cubemx.cmake)
-    set (cmake_scripts_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    include (${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v5/cmsis_v5.cmake)
+    include (${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis_v6/cmsis_v6.cmake)
+    include (${CMAKE_CURRENT_SOURCE_DIR}/frameworks/segger_rtt/segger_rtt.cmake)
     include (${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cmsis-dsp/cmsis-dsp.cmake)
+    include (${CMAKE_CURRENT_SOURCE_DIR}/silicon/st/stm32cubemx.cmake)
 else ()
     message (STATUS "Compiling for Host system")
 endif ()

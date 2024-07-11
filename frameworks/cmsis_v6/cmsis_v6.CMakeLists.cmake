@@ -53,7 +53,8 @@ elseif (($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
 else ()
     set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
 endif ()
-cmake_print_variables(ARMCMFTYPE)
+
+message (STATUS "${libName}: ${ARMCMFTYPE}")
 
 target_compile_options(${libName}
     INTERFACE

@@ -2,32 +2,32 @@ if (NOT DEFINED ${libName})
     set(libName cmsis_v5)
 endif ()
 
-project(${libName}
+project (${libName}
     VERSION ${GITHUB_BRANCH_${libName}}
     LANGUAGES C
     DESCRIPTION "Header only library for CMSIS V5"
 )
 
 # Main target ------------------------------------------------------------------
-add_library(${libName} INTERFACE)
-add_library(${libName}::framework ALIAS ${libName})
+add_library (${libName} INTERFACE)
+add_library (${libName}::framework ALIAS ${libName})
 # Sub target -------------------------------------------------------------------
 # Static library for generic device objects
-set(GenericName "${libName}_generic")
-add_library(${GenericName} STATIC)
+set (GenericName "${libName}_generic")
+add_library (${GenericName} STATIC)
 # Includes ---------------------------------------------------------------------
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
+include (GNUInstallDirs)
+include (CMakePackageConfigHelpers)
 
 # set public headers as a globbed function
-file(GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include/*.h)
-file(GLOB ${libName}_Core_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/*.h)
-set(${libName}_PUBLIC_HEADERS
+file (GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include/*.h)
+file (GLOB ${libName}_Core_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/*.h)
+set (${libName}_PUBLIC_HEADERS
     ${${libName}_Device_Headers}
     ${${libName}_Core_Headers}
 )
 
-target_include_directories(${libName}
+target_include_directories (${libName}
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include>
@@ -35,7 +35,7 @@ target_include_directories(${libName}
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
 )
 
-set_target_properties(${libName}
+set_target_properties (${libName}
     PROPERTIES
         C_STANDARD          11
         C_STANDARD_REQUIRED ON
@@ -44,7 +44,7 @@ set_target_properties(${libName}
         EXPORT_NAME         framework
 )
 
-target_compile_options(${libName}
+target_compile_options (${libName}
     INTERFACE
         $<$<C_COMPILER_ID:Clang>:-Wcast-align
                                  -Wcast-qual
@@ -80,21 +80,23 @@ target_compile_options(${libName}
 )
 ## Sub project ---------------------------------------------------------------
 
-target_sources(${GenericName}
+target_sources (${GenericName}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Source/system_ARM$ENV{CORTEX_TYPE}.c
 )
 
 # define the generic definition based on architecture --------------------------
 if (($ENV{CORTEX_TYPE} STREQUAL "CM7"))
-    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
+    set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
 elseif (($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
-    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
+    set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
 else ()
-    set(ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
+    set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
 endif ()
-cmake_print_variables(ARMCMFTYPE)
-target_compile_definitions(${GenericName}
+
+message (STATUS "${libName}: ${ARMCMFTYPE}")
+
+target_compile_definitions (${GenericName}
     PUBLIC
     ${ARMCMFTYPE} # defines the single, double or no floating point support
 )

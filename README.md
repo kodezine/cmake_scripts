@@ -2,7 +2,7 @@
 This is a comprehensive collection of CMake scripts for embedded systems developement.
 Each folder in this repository contains a markdown file that helps in making sense. I hope it does.
 
-[Static Libraries](./.readme/debug.svg) <img src="./.readme/debug.svg">
+[Static Libraries](./.readme/Debug.svg) <img src="./.readme/Debug.svg">
 ## Minimum CMake version
 While care has been taken to make the CMake scripts as modern as possible.
 

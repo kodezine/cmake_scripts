@@ -19,8 +19,9 @@ if (DEFINED PRECOMPILED_TAG_${libName})
     FetchContent_MakeAvailable(${libName})
     find_package(${libName})
     # export the two includes
-    set(${libName}_CORE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/include/${libName}" CACHE PATH "Path to the cmsis v5 includes")
-    set(${libName}_DEVICE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/include/${libName}" CACHE PATH "Path to the cmsis v5 device folder")
+    set (${libName}_CORE_PATH "${${libName}_SOURCE_DIR}/include/${libName}" CACHE PATH "Path to cmsis core folder")
+    set (${libName}_CORE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/include/${libName}" CACHE PATH "Path to the cmsis core includes")
+    set (${libName}_DEVICE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/include/${libName}" CACHE PATH "Path to the cmsis v5 device folder")
 else ()
     message(STATUS "${libName}: Compile from source")
     FetchContent_Declare(
@@ -35,7 +36,8 @@ else ()
         configure_file(${CMAKE_CURRENT_LIST_DIR}/${libName}.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
         add_subdirectory(${${libName}_SOURCE_DIR})
     endif ()
-    # export the two includes
-    set(${libName}_CORE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/CMSIS/Core/Include" CACHE PATH "Path to the cmsis v5 includes")
-    set(${libName}_DEVICE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include" CACHE PATH "Path to the cmsis v5 device folder")
+    # export the three includes
+    set (${libName}_CORE_PATH "${${libName}_SOURCE_DIR}/CMSIS/Core" CACHE PATH "Path to cmsis core folder")
+    set (${libName}_CORE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/CMSIS/Core/Include" CACHE PATH "Path to the cmsis core includes")
+    set (${libName}_DEVICE_INCLUDE_PATH "${${libName}_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include" CACHE PATH "Path to the cmsis v5 device folder")
 endif ()

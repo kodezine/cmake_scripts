@@ -8,6 +8,9 @@ if (NOT DEFINED GITHUB_BRANCH_${libName})
 endif ()
 
 message (STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
+# bring in the cmsis core folder as CMSISCORE here.
+include (${CMAKE_CURRENT_LIST_DIR}/${libName}.cmsis.cmake)
+
 # precompilation
 if (DEFINED PRECOMPILED_TAG_${libName})
     message (STATUS "${libName}: Precompiled tag ${PRECOMPILED_TAG_${libName}}")
@@ -30,7 +33,6 @@ else ()
     if (NOT ${libName}_POPULATED)
         FetchContent_MakeAvailable (${libName})
         configure_file (${CMAKE_CURRENT_LIST_DIR}/${libName}Config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake COPYONLY)
-        include (${CMAKE_CURRENT_LIST_DIR}/${libName}.cmsis.cmake)
-        add_subdirectory (${${libName}_SOURCE_DIR})
-    endif ()
+        add_library (${libName} ALIAS CMSISDSP)
+     endif ()
 endif ()

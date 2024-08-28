@@ -9,7 +9,7 @@ extern "C" {
 #include "stm32@STM32_TYPE@xx.h"
 
 /** cortex cmsis header */
-#include "system_@ARMCMSIS_DEVICE@.h"
+#include "system_@CMSIS_SYSTEM_TYPE@.h"
 
 #ifdef _cplusplus
 }

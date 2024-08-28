@@ -20,7 +20,7 @@ include (GNUInstallDirs)
 include (CMakePackageConfigHelpers)
 
 # set public headers as a globbed function
-file (GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include/*.h)
+file (GLOB ${libName}_Device_Headers ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/${CMSIS_V5_ARM_DEVICE}/Include/*.h)
 file (GLOB ${libName}_Core_Headers ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include/*.h)
 set (${libName}_PUBLIC_HEADERS
     ${${libName}_Device_Headers}
@@ -30,7 +30,7 @@ set (${libName}_PUBLIC_HEADERS
 target_include_directories (${libName}
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Core/Include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/${CMSIS_V5_ARM_DEVICE}/Include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
 )
@@ -82,19 +82,19 @@ target_compile_options (${libName}
 
 target_sources (${GenericName}
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/ARM$ENV{CORTEX_TYPE}/Source/system_ARM$ENV{CORTEX_TYPE}.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Device/ARM/${CMSIS_V5_ARM_DEVICE}/Source/system_${CMSIS_V5_ARM_DEVICE}.c
 )
 
 # define the generic definition based on architecture --------------------------
 if (($ENV{CORTEX_TYPE} STREQUAL "CM7"))
     set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_DP")
 elseif (($ENV{CORTEX_TYPE} STREQUAL "CM4F"))
-    set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}_SP")
+    set (ARMCMFTYPE "${CMSIS_V5_ARM_DEVICE}_FP")
 else ()
     set (ARMCMFTYPE "ARM$ENV{CORTEX_TYPE}")
 endif ()
 
-message (STATUS "${libName}: ${ARMCMFTYPE}")
+message (STATUS "${libName}: Compiles with defined ${ARMCMFTYPE}")
 
 target_compile_definitions (${GenericName}
     PUBLIC

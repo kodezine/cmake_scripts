@@ -8,6 +8,8 @@ endif()
 
 message(STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
 
+include (${CMAKE_CURRENT_LIST_DIR}/cmsis_CMType.cmake)
+
 if (DEFINED PRECOMPILED_TAG_${libName})
     message(STATUS "${libName}: Precompiled tag ${PRECOMPILED_TAG_${libName}}")
     FetchContent_Declare(

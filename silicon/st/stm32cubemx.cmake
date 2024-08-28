@@ -30,7 +30,15 @@ else ()
     string (TOLOWER ${STM32_TYPE} LOWERCASE_STM32_TYPE)
 
     #5# use the device family to set a cache variable for ARM Cortex Mx family here
-    set (ARMCMSIS_DEVICE "ARM$ENV{CORTEX_TYPE}" CACHE STRING "CMSIS Arm Cortex Device type to match folder" FORCE)
+    # set string to represent one of the above patterns
+    string (TOUPPER $ENV{CORTEX_TYPE} CORTEX_TYPE_UPPERCASE)
+    # CM4F is within CM4 so rename this type
+    if (CORTEX_TYPE_UPPERCASE STREQUAL "CM4F")
+        set (CORTEX_TYPE_UPPERCASE "CM4")
+    endif ()
+    # Add ARM prefix
+    set (CORTEX_TYPE_STRING "ARM${CORTEX_TYPE_UPPERCASE}")
+    set (CMSIS_SYSTEM_TYPE "${CORTEX_TYPE_STRING}" CACHE STRING "CMSIS Arm Cortex Device type to match folder" FORCE)
 
     #6# set the cubemx variable for a particular stm32 type
     set (STM32CubeXX STM32Cube${UPPERCASE_STM32_TYPE} CACHE STRING "CUBEMx String for controller family")

@@ -27,4 +27,4 @@ endif ()
 
 configure_file (${CMAKE_CURRENT_LIST_DIR}/CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
 
-add_subdirectory (${${libName}_SOURCE_DIR})
+add_subdirectory (${${libName}_SOURCE_DIR} ${${libName}_BINARY_DIR})

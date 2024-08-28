@@ -34,7 +34,7 @@ else ()
         FetchContent_MakeAvailable(${libName})
         configure_file(${CMAKE_CURRENT_LIST_DIR}/${libName}Config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake COPYONLY)
         configure_file(${CMAKE_CURRENT_LIST_DIR}/${libName}.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
-        add_subdirectory(${${libName}_SOURCE_DIR})
+        add_subdirectory(${${libName}_SOURCE_DIR} ${${libName}_BINARY_DIR})
     endif ()
     # export the three includes
     set (${libName}_CORE_PATH "${${libName}_SOURCE_DIR}/CMSIS/Core" CACHE PATH "Path to cmsis core folder")

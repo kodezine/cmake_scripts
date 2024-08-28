@@ -37,8 +37,8 @@ else ()
         set (CORTEX_TYPE_UPPERCASE "CM4")
     endif ()
     # Add ARM prefix
-    set (CORTEX_TYPE_STRING "ARM${CORTEX_TYPE_UPPERCASE}")
-    set (CMSIS_SYSTEM_TYPE "${CORTEX_TYPE_STRING}" CACHE STRING "CMSIS Arm Cortex Device type to match folder" FORCE)
+    set (SYSTEM_CORTEX_TYPE_STRING "ARM${CORTEX_TYPE_UPPERCASE}")
+    set (CMSIS_SYSTEM_TYPE "${SYSTEM_CORTEX_TYPE_STRING}" CACHE STRING "CMSIS Arm Cortex Device type to match folder" FORCE)
 
     #6# set the cubemx variable for a particular stm32 type
     set (STM32CubeXX STM32Cube${UPPERCASE_STM32_TYPE} CACHE STRING "CUBEMx String for controller family")

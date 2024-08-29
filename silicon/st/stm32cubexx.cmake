@@ -1,14 +1,25 @@
 include (CMakePrintHelpers)
 include (FetchContent)
 
-set (libName "stm32cubemx")
+### Determine if valid definitions exist for build from sources
+#1# overarching HAL and CMSIS driver repo fetching mechanism for STM32 microcontrollers
+if (NOT DEFINED ENV{CORTEX_TYPE})
+    message (FATAL_ERROR "${libName}: needs a cortex type defined")
+endif ()
 
-# include list of all supported STM32 Devices, checks if the valid device is defined
-include (${CMAKE_CURRENT_LIST_DIR}/stm32devices.cmake)
-# include list of all supported STM32 Types, lower case STM32_TYPE from STM32_DEVICE
-include (${CMAKE_CURRENT_LIST_DIR}/stm32types.cmake)
-# include the selection of cmsis used for this build
-include (${CMAKE_CURRENT_LIST_DIR}/${libName}.cmsis.cmake)
+#2# the variable value should be always upper case
+string (TOUPPER ${STM32_TYPE} UPPERCASE_STM32_TYPE)
+string (TOLOWER ${STM32_TYPE} LOWERCASE_STM32_TYPE)
+
+#3# the library is made as stm32cubef0 for STM32_TYPE as "f0"
+set (libName "stm32cube${LOWERCASE_STM32_TYPE}")
+
+#4# include list of all supported STM32 Devices, checks if the valid device is defined
+include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.devices.cmake)
+#5# include list of all supported STM32 Types, lower case STM32_TYPE from STM32_DEVICE
+include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.types.cmake)
+#6# include the selection of cmsis used for this build
+include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.cmsis.cmake)
 
 if (NOT DEFINED GITHUB_BRANCH_${libName})
     set (GITHUB_BRANCH_${libName} "1.11.5")
@@ -17,17 +28,8 @@ endif ()
 message (STATUS "${libName}: ${GITHUB_BRANCH_${libName}}")
 # precompilation
 if (DEFINED PRECOMPILED_TAG_${libName})
-    include (${CMAKE_CURRENT_LIST_DIR}/${libName}.precompiled.cmake)
+    include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.precompiled.cmake)
 else ()
-    ### Determine if valid definitions exist for build from sources
-    #1# overarching HAL and CMSIS driver repo fetching mechanism for STM32 microcontrollers
-    if (NOT DEFINED ENV{CORTEX_TYPE})
-        message (FATAL_ERROR "${libName}: needs a cortex type defined")
-    endif ()
-
-    #2# the variable value should be always upper case
-    string (TOUPPER ${STM32_TYPE} UPPERCASE_STM32_TYPE)
-    string (TOLOWER ${STM32_TYPE} LOWERCASE_STM32_TYPE)
 
     #5# use the device family to set a cache variable for ARM Cortex Mx family here
     # set string to represent one of the above patterns
@@ -56,8 +58,8 @@ else ()
         # Check if target already is imported, else add it
         if (TARGET ${libName})
         else ()
-            configure_file (${CMAKE_CURRENT_LIST_DIR}/${libName}.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake COPYONLY)
-            configure_file (${CMAKE_CURRENT_LIST_DIR}/${libName}.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
+            configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake COPYONLY)
+            configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt COPYONLY)
             add_subdirectory (${${libName}_SOURCE_DIR} ${${libName}_BINARY_DIR})
         endif ()
     endif ()

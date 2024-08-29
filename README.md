@@ -18,13 +18,13 @@ and many more...
 
 ## [silicon](./silicon/)
 This folder contains various silicon vendor libraries creation scripts
-* STMicroelectronics
-    * [stm32cubemx](https://github.com/STMicroelectronics/STM32Cube_MCU_Overall_Offer)
+### [STMicroelectronics](./silicon/st)
+The folder is home to the STM Microelectronics HAL and LL drivers usually found at [stm32cubemx](https://github.com/STMicroelectronics/STM32Cube_MCU_Overall_Offer).
+The details of how the drivers are introduced is [here](./silicon/st/stm32cubexx.md).
 ... others follow.
 
 ## [toolchains](./toolchains/toolchains.md)
 Cross compilation toolchains which can use CMake.
 
 ## [utilities](./utilities/)
-
 

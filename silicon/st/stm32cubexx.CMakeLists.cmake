@@ -4,17 +4,17 @@ include(CMakePackageConfigHelpers)
 include(CMakePrintHelpers)
 
 if (NOT DEFINED ${libName})
-    set(libName stm32cubemx)
+    set(libName "stm32cube${STM32_TYPE}") # the STM32_TYPE is allways lower case
 endif ()
 
-project(${libName}
+project (${libName}
     VERSION ${GITHUB_BRANCH_${libName}}
     LANGUAGES C
     DESCRIPTION "STM32CubeMx library for devices"
 )
 
-add_library(${libName} STATIC)
-add_library(${libName}::framework ALIAS ${libName})
+add_library (${libName} STATIC)
+add_library (${libName}::framework ALIAS ${libName})
 
 # the configuration of hal should be available in all cases
 # if it is not provided, we use ALL the available drivers in the default configuration

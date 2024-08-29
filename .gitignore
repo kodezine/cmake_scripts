@@ -15,4 +15,13 @@ targetbasedincludes.h
 *.dot
 *.dot.*
 .vs
-
+[bB]uild
+[dD]ebug
+[rR]elease
+.vscode
+.settings
+*.launch
+_deps
+CMakeUserPresets.json
+*.dot*
+src/targetbasedincludes.h

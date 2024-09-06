@@ -4,6 +4,7 @@ set(LIST_SUPPORTED_STM32_TYPES
     "F0"
     "F3"
     "F4"
+    "G4"
     "H7"
 )
 

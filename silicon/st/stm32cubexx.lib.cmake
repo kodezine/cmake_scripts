@@ -5,12 +5,6 @@ if (NOT DEFINED ${libName})
     set(libName "stm32cube${STM32_TYPE}") # the STM32_TYPE is allways lower case
 endif ()
 
-#project (${libName}
-#    VERSION ${GITHUB_BRANCH_${libName}}
-#    LANGUAGES C
-#    DESCRIPTION "STM32CubeMx library for devices"
-#)
-
 add_library (${libName} STATIC)
 add_library (${libName}::framework ALIAS ${libName})
 

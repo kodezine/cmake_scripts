@@ -7,7 +7,7 @@ set (UNITY_EXTENSION_MEMORY  ON CACHE BOOL "Build unity with memory")
 set (GITHUB_BRANCH_UNITY "2.5.2")
 set (GITHUB_BRANCH_UNITY_MD5 "41e6422c3a54a395abcae531293e254c")
 
-message (STATUS "unity: is ${GITHUB_BRANCH_UNITY}")
+message (STATUS "Unity: ${GITHUB_BRANCH_UNITY}")
 
 FetchContent_Declare(
     unity # Recommendation: Stick close to the original name.

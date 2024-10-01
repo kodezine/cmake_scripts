@@ -4,7 +4,7 @@ add_definitions(-DUNITY_INCLUDE_CONFIG_H)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/unity_rtt_config.h ${unity_SOURCE_DIR}/src/unity_config.h COPYONLY)
 
 # this is common for both host and target
-add_subdirectory(${unity_SOURCE_DIR} ${unity_BINARY_DIR})
+#add_subdirectory(${unity_SOURCE_DIR} ${unity_BINARY_DIR})
 
 # this links the segger rtt library
 message (STATUS "Unity: Linking with Segger RTT")

@@ -95,9 +95,5 @@ set_target_properties(${libName}
         EXPORT_NAME         framework
 )
 
-target_link_libraries(${libName}
-    $<IF:$<BOOL:${cmsis}>,${cmsis},>
-)
-
 # set the target compile options
 setTargetCompileOptions(libName)

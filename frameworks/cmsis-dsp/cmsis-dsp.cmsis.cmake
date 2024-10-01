@@ -1,8 +1,6 @@
 # determine a cmsis version based on already supplied by the framework/cmsis_v6 or framework/cmsis_v5
 # if none is give, use the local cmsis supplied by the stm32cubexx
 
-include (GNUInstallDirs)
-include (CMakePackageConfigHelpers)
 include (CMakePrintHelpers)
 
 if ((DEFINED cmsis_v5_CORE_INCLUDE_PATH) AND

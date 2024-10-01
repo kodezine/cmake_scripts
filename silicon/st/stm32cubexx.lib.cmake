@@ -107,31 +107,3 @@ target_link_libraries(${libName}
 
 # set the target compile options
 setTargetCompileOptions(libName)
-
-# Package begins
-write_basic_package_version_file(${libName}ConfigVersion.cmake
-    VERSION       ${GITHUB_BRANCH_${libName}}
-    COMPATIBILITY SameMajorVersion
-)
-
-## Package, Target installation
-install(TARGETS     ${libName}
-    EXPORT          ${libName}Targets
-    ARCHIVE         DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY         DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME         DESTINATION ${CMAKE_INSTALL_BINDIR}
-    PUBLIC_HEADER   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
-    COMPONENT       library
-)
-
-## Target's cmake files: targets export
-install(EXPORT  ${libName}Targets
-    NAMESPACE   ${libName}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
-)
-
-## Target's cmake files: config and version config for find_package()
-install(FILES   ${libName}Config.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
-)

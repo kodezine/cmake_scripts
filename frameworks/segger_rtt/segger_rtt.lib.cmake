@@ -20,6 +20,11 @@ add_library(${libName}::framework ALIAS ${libName})
 
 # Includes ---------------------------------------------------------------------
 
+# Includes ---------------------------------------------------------------------
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+
 set(${libName}_SOURCES
     #${${libName}_SOURCE_DIR}/RTT/SEGGER_RTT_ASM_ARMv7M.S
     ${${libName}_SOURCE_DIR}/RTT/SEGGER_RTT_printf.c
@@ -48,3 +53,31 @@ set(${libName}_PUBLIC_HEADERS
 
 # Add target compile options based on toolchain
 setTargetCompileOptions(libName)
+
+
+write_basic_package_version_file(${libName}ConfigVersion.cmake
+    VERSION       "0.0.1"
+    COMPATIBILITY SameMajorVersion
+)
+
+## Target installation
+install(TARGETS   ${libName}
+    EXPORT        ${libName}Targets
+    ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
+    COMPONENT     library
+)
+
+## Target's cmake files: targets export
+install(EXPORT  ${libName}Targets
+    NAMESPACE   ${libName}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
+)
+
+## Target's cmake files: config and version config for find_package()
+install(FILES   ${libName}Config.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
+)
+

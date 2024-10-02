@@ -51,6 +51,9 @@ else ()
         GIT_REPOSITORY              https://github.com/STMicroelectronics/${STM32CubeXX}.git
         GIT_TAG                     v${GITHUB_BRANCH_${libName}}
         GIT_SHALLOW                 true
+        GIT_PROGRESS                true # show progress of download
+        USES_TERMINAL_DOWNLOAD      true # show progress in ninja generator
+      
     )
 
     FetchContent_MakeAvailable (${libName})

@@ -48,7 +48,7 @@ else ()
     FetchContent_Declare (
         ${libName}                  # Recommendation: Stick close to the original name.
         DOWNLOAD_EXTRACT_TIMESTAMP  true
-        GIT_REPOSITORY              https://github.com/STMicroelectronics/${STM32CubeXX}
+        GIT_REPOSITORY              https://github.com/STMicroelectronics/${STM32CubeXX}.git
         GIT_TAG                     v${GITHUB_BRANCH_${libName}}
         GIT_SHALLOW                 true
     )

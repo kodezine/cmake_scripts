@@ -14,3 +14,21 @@ This collection includes a basic cross compiler collection support:
 4. [LLVM - GCC Hybrid](https://interrupt.memfault.com/blog/arm-cortexm-with-llvm-clang#update-clang-baremetal)
     * may fail to work, it's reaching end-of-life.
     * toolchain script to be used is [here](./llvm-clang-gcc.cmake)
+## How to Use the toolchains
+Please specify the environment variable for `COMPILER_ROOT_PATH` to point to the toolchain directory.
+```json
+    "configurePresets": [
+        {
+            "hidden": true,
+            "name": "llvm",
+            "environment": {
+                "COMPILER_ROOT_PATH": "$env{HOME}/llvm_arm"
+            },
+            "cacheVariables": {
+                "GITHUB_BRANCH_toolchain": "HEAD",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/_deps/cmake_scripts-src/toolchains/llvm_clang_arm.cmake"
+            }
+        },
+    ...
+    ]
+```

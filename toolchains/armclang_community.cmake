@@ -5,15 +5,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/common/checkCORTEX_TYPE.cmake)
 # set factors based on the cortex type defined
 include(${CMAKE_CURRENT_LIST_DIR}/cortex/$ENV{CORTEX_TYPE}.cmake)
 
-# Specify location of toolchain root folder
-message(CHECK_START "Searching for ARM_CLANG_ROOT_FOLDER")
-if(NOT EXISTS "$ENV{ARM_CLANG_ROOT_FOLDER}")
-    message(CHECK_FAIL "not found.")
-    message(FATAL_ERROR "No valid compiler for this toolchain found, aborting!")
-else()
-    message(CHECK_PASS "found ... \"$ENV{ARM_CLANG_ROOT_FOLDER}\"")
-    set(TC_ROOT_FOLDER "$ENV{ARM_CLANG_ROOT_FOLDER}")
-endif()
+# check if the toolchain path is valid
+include (${CMAKE_CURRENT_LIST_DIR}/common/checkcompilerpath.cmake)
+
+# specify location of the cross compiler toolchain
+set(TC_ROOT_FOLDER "$ENV{COMPILER_ROOT_PATH}")
 
 # Exports the compile options for each file as compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

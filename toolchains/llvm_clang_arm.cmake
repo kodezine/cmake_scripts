@@ -6,15 +6,11 @@ include (${CMAKE_CURRENT_LIST_DIR}/cortex/check_cortex_type.cmake)
 string (TOLOWER $ENV{CORTEX_TYPE} cmType)
 include (${CMAKE_CURRENT_LIST_DIR}/cortex/${cmType}.cmake)
 
-# Specify location of toolchain root folder
-message (CHECK_START "Searching for LLVM_CLANG_ROOT_FOLDER")
-if (NOT EXISTS "$ENV{LLVM_CLANG_ROOT_FOLDER}")
-    message (CHECK_FAIL "not found.")
-    message (FATAL_ERROR "No valid compiler for this toolchain found, aborting!")
-else ()
-    message (CHECK_PASS "found ... \"$ENV{LLVM_CLANG_ROOT_FOLDER}\"")
-    set (TC_ROOT_FOLDER "$ENV{LLVM_CLANG_ROOT_FOLDER}")
-endif ()
+# check if the toolchain path is valid
+include (${CMAKE_CURRENT_LIST_DIR}/common/checkcompilerpath.cmake)
+
+# specify location of the cross compiler toolchain
+set(TC_ROOT_FOLDER "$ENV{COMPILER_ROOT_PATH}")
 
 # Exports the compile options for each file as compile_commands.json
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -33,8 +29,8 @@ cmake_path (SET TC__NM_EXEC NORMALIZE "${TC_ROOT_FOLDER}/bin/llvm-nm${TC_POSTFIX
 cmake_path (SET TC_ROB_EXEC NORMALIZE "${TC_ROOT_FOLDER}/bin/llvm-readobj${TC_POSTFIX}")
 
 # exclusive for llvm compilers
-if (NOT EXISTS $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name})
-    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/toolchains/common/.llvm_configs/${llvm_config_file_name} $ENV{LLVM_CLANG_ROOT_FOLDER}/bin/${llvm_config_file_name} COPYONLY)
+if (NOT EXISTS $ENV{COMPILER_ROOT_PATH}/bin/${llvm_config_file_name})
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/toolchains/common/.llvm_configs/${llvm_config_file_name} $ENV{COMPILER_ROOT_PATH}/bin/${llvm_config_file_name} COPYONLY)
 endif ()
 # set target compiler triplet (throws error otherwise)
 set (FLAGS "${llvm_config_file}"        CACHE STRING "Compiler flags")

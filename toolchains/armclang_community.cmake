@@ -1,6 +1,6 @@
 include(CMakePrintHelpers)
 # check the environment variable for the supported cortex type
-include(${CMAKE_CURRENT_LIST_DIR}/common/checkCORTEX_TYPE.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/common/check_cortex_type.cmake)
 
 # set factors based on the cortex type defined
 string (TOLOWER $ENV{CORTEX_TYPE} cmType)

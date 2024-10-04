@@ -1,6 +1,6 @@
 include(CMakePrintHelpers)
 # check the environment variable for the supported cortex type
-include(${CMAKE_CURRENT_LIST_DIR}/common/check_cortex_type.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cortex/check_cortex_type.cmake)
 
 # set factors based on the cortex type defined
 string (TOLOWER $ENV{CORTEX_TYPE} cmType)
@@ -8,6 +8,9 @@ include (${CMAKE_CURRENT_LIST_DIR}/cortex/${cmType}.cmake)
 
 # check if the toolchain path is valid
 include (${CMAKE_CURRENT_LIST_DIR}/common/checkcompilerpath.cmake)
+
+# set postfix
+set (TC_POSTFIX ".exe")
 
 # specify location of the cross compiler toolchain
 set(TC_ROOT_FOLDER "$ENV{COMPILER_ROOT_PATH}")

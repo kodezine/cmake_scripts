@@ -3,7 +3,8 @@ include(CMakePrintHelpers)
 include(${CMAKE_CURRENT_LIST_DIR}/common/checkCORTEX_TYPE.cmake)
 
 # set factors based on the cortex type defined
-include(${CMAKE_CURRENT_LIST_DIR}/cortex/$ENV{CORTEX_TYPE}.cmake)
+string (TOLOWER $ENV{CORTEX_TYPE} cmType)
+include (${CMAKE_CURRENT_LIST_DIR}/cortex/${cmType}.cmake)
 
 # check if the toolchain path is valid
 include (${CMAKE_CURRENT_LIST_DIR}/common/checkcompilerpath.cmake)

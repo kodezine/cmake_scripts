@@ -28,11 +28,13 @@ else()
     set(IF)
 endif()
 
-if(DEVICE)
-    set(DEV "${DEVICE}")
+if(JLINK_DEVICE)
+    set(DEV "${JLINK_DEVICE}")
 else()
     set(DEV "STM32H743XI")
 endif()
+
+message (STATUS "Segger_JLink: ready for ${DEV}")
 
 message(STATUS "Configure the flasher binary for host system: ${CMAKE_HOST_SYSTEM_NAME}")
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")

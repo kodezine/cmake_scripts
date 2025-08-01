@@ -16,7 +16,7 @@ function(setTargetCompileOptions PROJECTNAME)
     target_compile_options( ${${PROJECTNAME}}
     PUBLIC
         -xc
-        #-std=c11
+        -D__MICROLIB
         -c
         -fno-rtti
         -funsigned-char
@@ -47,6 +47,7 @@ function(setTargetLinkOptions PROJECTNAME)
     target_link_options( ${${PROJECTNAME}}
         PUBLIC
         --cpu ${ac6_link_flag}
+        --library_type=microlib
         --strict
         "$<$<CONFIG:Debug>:--bestdebug>"            # Debug symbols
         "$<$<CONFIG:Release>:--no_debug>"           # No Debug symbols

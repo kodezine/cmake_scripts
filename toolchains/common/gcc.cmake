@@ -14,8 +14,6 @@ function(setTargetCompileOptions PROJECTNAME)
     target_compile_options( ${${PROJECTNAME}}
     PUBLIC
     # Other options
-    -gdwarf
-    "$<$<CONFIG:Debug>:-g3>"
     -fdata-sections
     -ffunction-sections
     --specs=nano.specs

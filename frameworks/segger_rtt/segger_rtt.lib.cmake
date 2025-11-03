@@ -80,4 +80,3 @@ install(FILES   ${libName}Config.cmake
                 ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
 )
-

@@ -14,6 +14,5 @@ The various files here provide a consistent value to necessary flags and setting
 | `llvm_gcc_float_abi` | `llvm-gcc` | `-mfloat-abi=soft` | :warning: | :warning: |
 | `llvm_gcc_march` | `llvm-gcc` | `-march=armv6m` | :warning: | :warning: |
 
-
 :information_source: _: flag/setting not set_
 :warning: : _not supported_

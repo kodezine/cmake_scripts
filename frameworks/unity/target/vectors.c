@@ -1,7 +1,7 @@
-#include <stdint.h>
-#include "targetbasedincludes.h"
 #include "vectors.h"
 #include "cmsis_compiler.h"
+#include "targetbasedincludes.h"
+#include <stdint.h>
 /******************************************************************************
  * @file     startup_<Device>.c
  * @brief    CMSIS-Core(M) Device Startup File for
@@ -50,20 +50,20 @@ __NO_RETURN void Default_Handler(void);
   Exception / Interrupt Handler
  *---------------------------------------------------------------------------*/
 /* Exceptions */
-void NMI_Handler                      (void) __attribute__((weak, alias("Default_Handler")));
-void HardFault_Handler                (void) __attribute__((weak));
-void MemManage_Handler                (void) __attribute__((weak, alias("Default_Handler")));
-void BusFault_Handler                 (void) __attribute__((weak, alias("Default_Handler")));
-void UsageFault_Handler               (void) __attribute__((weak, alias("Default_Handler")));
+void NMI_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void HardFault_Handler(void) __attribute__((weak));
+void MemManage_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void BusFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void UsageFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
 // void SecureFault_Handler                (void) __attribute__ ((weak, alias("Default_Handler")));
 // void SecureFault_Handler                (void) __attribute__ ((weak, alias("Default_Handler")));
 // void SecureFault_Handler                (void) __attribute__ ((weak, alias("Default_Handler")));
 // void SecureFault_Handler                (void) __attribute__ ((weak, alias("Default_Handler")));
-void SVC_Handler                      (void) __attribute__((weak, alias("Default_Handler")));
-void DebugMon_Handler                 (void) __attribute__((weak, alias("Default_Handler")));
+void SVC_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DebugMon_Handler(void) __attribute__((weak, alias("Default_Handler")));
 // void SecureFault_Handler              (void) __attribute__ ((weak, alias("Default_Handler")));
-void PendSV_Handler                   (void) __attribute__((weak, alias("Default_Handler")));
-void SysTick_Handler                  (void) __attribute__((weak, alias("Default_Handler")));
+void PendSV_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void SysTick_Handler(void) __attribute__((weak, alias("Default_Handler")));
 
 /* Add your device specific interrupt handler */
 /*---------------------------------------------------------------------------
@@ -75,33 +75,33 @@ void SysTick_Handler                  (void) __attribute__((weak, alias("Default
  *----------------------------------------------------------------------------*/
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
 /* ToDo: Add Cortex exception vectors according the used Cortex-Core */
 extern const VECTOR_TABLE_Type __VECTOR_TABLE[32];
-const VECTOR_TABLE_Type __VECTOR_TABLE[32] __VECTOR_TABLE_ATTRIBUTE = {
-    (VECTOR_TABLE_Type)(&__INITIAL_SP)                    , /*     Initial Stack Pointer */
-    (VECTOR_TABLE_Type)&Reset_Handler                     , /*     Reset Handler */
-    (VECTOR_TABLE_Type)&NMI_Handler                       , /* -14 NMI Handler */
-    (VECTOR_TABLE_Type)&HardFault_Handler                 , /* -13 Hard Fault Handler */
-    (VECTOR_TABLE_Type)&MemManage_Handler                 , /* -12 MPU Fault Handler */
-    (VECTOR_TABLE_Type)&BusFault_Handler                  , /* -11 Bus Fault Handler */
-    (VECTOR_TABLE_Type)&UsageFault_Handler                , /* -10 Usage Fault Handler */
-    (VECTOR_TABLE_Type)0                                  , /*  -9 Secure Fault Handler */
-    (VECTOR_TABLE_Type)0                                  , /*     Reserved */
-    (VECTOR_TABLE_Type)0                                  , /*     Reserved */
-    (VECTOR_TABLE_Type)0                                  , /*     Reserved */
-    (VECTOR_TABLE_Type)&SVC_Handler                       , /*  -5 SVCall Handler */
-    (VECTOR_TABLE_Type)&DebugMon_Handler                  , /*  -4 Debug Monitor Handler */
-    (VECTOR_TABLE_Type)0                                  , /*     Reserved */
-    (VECTOR_TABLE_Type)&PendSV_Handler                    , /*  -2 PendSV Handler */
-    (VECTOR_TABLE_Type)&SysTick_Handler                   , /*  -1 SysTick Handler */
+const VECTOR_TABLE_Type        __VECTOR_TABLE[32] __VECTOR_TABLE_ATTRIBUTE = {
+    (VECTOR_TABLE_Type)(&__INITIAL_SP),     /*     Initial Stack Pointer */
+    (VECTOR_TABLE_Type)&Reset_Handler,      /*     Reset Handler */
+    (VECTOR_TABLE_Type)&NMI_Handler,        /* -14 NMI Handler */
+    (VECTOR_TABLE_Type)&HardFault_Handler,  /* -13 Hard Fault Handler */
+    (VECTOR_TABLE_Type)&MemManage_Handler,  /* -12 MPU Fault Handler */
+    (VECTOR_TABLE_Type)&BusFault_Handler,   /* -11 Bus Fault Handler */
+    (VECTOR_TABLE_Type)&UsageFault_Handler, /* -10 Usage Fault Handler */
+    (VECTOR_TABLE_Type)0,                   /*  -9 Secure Fault Handler */
+    (VECTOR_TABLE_Type)0,                   /*     Reserved */
+    (VECTOR_TABLE_Type)0,                   /*     Reserved */
+    (VECTOR_TABLE_Type)0,                   /*     Reserved */
+    (VECTOR_TABLE_Type)&SVC_Handler,        /*  -5 SVCall Handler */
+    (VECTOR_TABLE_Type)&DebugMon_Handler,   /*  -4 Debug Monitor Handler */
+    (VECTOR_TABLE_Type)0,                   /*     Reserved */
+    (VECTOR_TABLE_Type)&PendSV_Handler,     /*  -2 PendSV Handler */
+    (VECTOR_TABLE_Type)&SysTick_Handler,    /*  -1 SysTick Handler */
 };
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
 
 /*---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ __NO_RETURN void Reset_Handler(void)
 
 /* ToDo: Add stack sealing for Armv8-M based processors */
 #if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-    __TZ_set_STACKSEAL_S((uint32_t *)(&__STACK_SEAL));
+    __TZ_set_STACKSEAL_S((uint32_t*)(&__STACK_SEAL));
 #endif
 
     SystemInit();      /* CMSIS System Initialization */
@@ -125,8 +125,8 @@ __NO_RETURN void Reset_Handler(void)
 }
 
 #if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #endif
 
 /*---------------------------------------------------------------------------
@@ -148,5 +148,5 @@ void Default_Handler(void)
 }
 
 #if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif

@@ -1,0 +1,149 @@
+---
+# Configuration for cmake-format
+# See: https://cmake-format.readthedocs.io/en/latest/configuration.html
+
+# Basic formatting options
+format:
+  # How wide to allow formatted cmake files
+  line_width: 120
+
+  # How many spaces to tab for indent
+  tab_size: 2
+
+  # Use tabs instead of spaces for indentation
+  use_tabchars: false
+
+  # If true, separate control flow keywords (if/while/foreach) from their
+  # opening parenthesis with a space
+  separate_ctrl_name_with_space: true
+
+  # If true, separate function names from parenthesis with a space
+  separate_fn_name_with_space: true
+
+  # Formatting for function/macro arguments and conditionals
+  dangle_parens: false
+
+  # If function statement is wrapped to more than one line, then force
+  # dangling parenthesis
+  dangle_align: 'prefix'
+
+  # If the trailing parenthesis must be 'dangled' on it's on line, then
+  # align it to this reference
+  min_prefix_chars: 4
+
+  # If the statement spelling length (including space and parenthesis is
+  # larger than the tab width by more than this amount, then force reject
+  # un-nested layouts.
+  max_prefix_chars: 10
+
+  # If a candidate layout is wrapped horizontally but it exceeds this many
+  # lines, then reject the layout.
+  max_lines_hwrap: 2
+
+  # What style line endings to use in the output.
+  line_ending: 'unix'
+
+  # Format command names consistently as 'lower' or 'upper' case
+  command_case: 'lower'
+
+  # Format keywords consistently as 'lower', 'upper', or 'unchanged'
+  keyword_case: 'upper'
+
+  # A list of command names which should always be wrapped
+  always_wrap: []
+
+  # If true, the argument lists which are known to be sortable will be
+  # sorted lexicographically
+  enable_sort: true
+
+  # If true, the parsers may infer whether or not an argument list is
+  # sortable (without annotation).
+  autosort: false
+
+# Options affecting comment reflow and formatting
+markup:
+  # What character to use for bulleted lists
+  bullet_char: '*'
+
+  # What character to use as punctuation after numerals in an enumerated list
+  enum_char: '.'
+
+  # enable comment markup parsing and reflow
+  enable_markup: true
+
+  # If comment markup is enabled, don't reflow the first comment block in
+  # each listfile
+  first_comment_is_literal: false
+
+  # If comment markup is enabled, don't reflow any comment block which
+  # matches this (regex) pattern
+  literal_comment_pattern: null
+
+  # Regular expression to match preformat fences in comments
+  fence_pattern: '^\\s*([`~]{3}[`~]*)(.*)$'
+
+  # Regular expression to match rulers in comments
+  ruler_pattern: '^\\s*[^\\w\\s]{3}.*[^\\w\\s]{3}$'
+
+# Options affecting the linter
+lint:
+  # a list of lint codes to disable
+  disabled_codes: []
+
+  # regular expression pattern describing valid function names
+  function_pattern: '[0-9a-z_]+'
+
+  # regular expression pattern describing valid macro names
+  macro_pattern: '[0-9A-Z_]+'
+
+  # regular expression pattern describing valid names for variables with
+  # global (cache) scope
+  global_var_pattern: '[A-Z][0-9A-Z_]+'
+
+  # regular expression pattern describing valid names for variables with
+  # global scope (but internal semantic)
+  internal_var_pattern: '_[A-Z][0-9A-Z_]+'
+
+  # regular expression pattern describing valid names for variables with
+  # local scope
+  local_var_pattern: '[a-z][a-z0-9_]+'
+
+  # regular expression pattern describing valid names for privatedirectory
+  # variables
+  private_var_pattern: '_[0-9a-z_]+'
+
+  # regular expression pattern describing valid names for public directory
+  # variables
+  public_var_pattern: '[A-Z][0-9A-Z_]+'
+
+  # In the heuristic for C0201, how many conditional branches to match
+  # before returning false
+  max_conditionals_custom_parser: 2
+
+  # Require at least this many newlines between statements
+  min_statement_spacing: 1
+
+  # Require no more than this many newlines between statements
+  max_statement_spacing: 2
+
+  max_returns: 6
+  max_branches: 12
+  max_arguments: 5
+  max_localvars: 15
+  max_statements: 50
+
+# Options affecting file encoding
+encode:
+  # If true, emit the unicode byte-mark for utf-8 files
+  emit_byteorder_mark: false
+
+  # Specify the encoding of the input file. Defaults to utf-8.
+  input_encoding: 'utf-8'
+
+  # Specify the encoding of the output file. Defaults to utf-8.
+  output_encoding: 'utf-8'
+
+# Miscellaneous configurations options.
+misc:
+  # A dictionary containing any per-command configuration overrides.
+  per_command: {}

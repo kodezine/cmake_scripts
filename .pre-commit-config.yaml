@@ -43,3 +43,12 @@ repos:
     rev: v1.37.1  # Use the latest stable version
     hooks:
       - id: yamllint
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+      - id: cmake-format
+        additional_dependencies: [pyyaml]
+        types: [cmake]
+#      - id: cmake-lint
+#        additional_dependencies: [pyyaml]
+#        types: [cmake]

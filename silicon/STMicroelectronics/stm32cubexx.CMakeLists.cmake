@@ -74,8 +74,13 @@ file (GLOB STLegacyHeaders ${st_HAL_DRV_INCLUDE_LEGACY_DIR}/*.h)
 # glob all hal and ll headers
 file (GLOB HALAndLLHeaders ${st_HAL_DRV_INCLUDE_DIR}/*.h)
 
-set (AllHeaders ${STLegacyHeaders} ${cmsis_DEVICE_HEADERS} ${HALAndLLHeaders}
-                $<IF:$<BOOL:${cmsis}>,,${cmsis_CORE_HEADERS}> $<IF:$<BOOL:${cmsis}>,,${cmsis_INCLUDE_HEADERS}>)
+# Conditionally add CMSIS headers based on cmsis variable
+if (cmsis STREQUAL "")
+  set (AllHeaders ${STLegacyHeaders} ${cmsis_DEVICE_HEADERS} ${HALAndLLHeaders} ${cmsis_CORE_HEADERS}
+                  ${cmsis_INCLUDE_HEADERS})
+else ()
+  set (AllHeaders ${STLegacyHeaders} ${cmsis_DEVICE_HEADERS} ${HALAndLLHeaders})
+endif ()
 
 list (FILTER AllHeaders EXCLUDE REGEX "template")
 
@@ -103,7 +108,10 @@ set_target_properties (
              PUBLIC_HEADER "${${libName}_PUBLIC_HEADERS}"
              EXPORT_NAME framework)
 
-target_link_libraries (${libName} $<IF:$<BOOL:${cmsis}>,${cmsis},>)
+# Conditionally link CMSIS library
+if (NOT cmsis STREQUAL "")
+  target_link_libraries (${libName} ${cmsis})
+endif ()
 
 # set the target compile options
 settargetcompileoptions (libName)

@@ -72,10 +72,15 @@ else ()
   cpmaddpackage (
     NAME
     ${libName}
-    GITHUB_REPOSITORY
-    https://github.com/STMicroelectronics/${STM32CubeXX}
+    GIT_REPOSITORY
+    https://github.com/STMicroelectronics/${STM32CubeXX}.git
     GIT_TAG
     ${GITHUB_BRANCH_${libName}}
+    GIT_SHALLOW
+    TRUE
+    GIT_SUBMODULES_RECURSE
+    TRUE
+    OPTIONS
     DOWNLOAD_ONLY
     TRUE)
   message (STATUS "${libName}: configuring and building from source")

@@ -88,7 +88,7 @@ else ()
   string (REPLACE "v" "" ${libName}Version ${GITHUB_BRANCH_${libName}})
   # 14 # configure the CMakeLists and Config files into the source directory
   configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake
-                  COPYONLY)
+                  @ONLY)
   configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt
                   COPYONLY)
   # 15 # add the subdirectory to build the library from source

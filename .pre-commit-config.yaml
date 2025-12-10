@@ -12,7 +12,7 @@ repos:
         args: [--autofix, --no-sort-keys]
       - id: check-added-large-files
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.2
+    rev: v21.1.7
     hooks:
       - id: clang-format
         exclude_types: [json, svg]
@@ -21,12 +21,12 @@ repos:
             vartab.h
           )
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.8
+    rev: v1.7.9
     hooks:
       - id: actionlint
         args: [-ignore, SC2086, -ignore, SC2046]
   - repo: https://github.com/psf/black
-    rev: 25.9.0
+    rev: 25.12.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8

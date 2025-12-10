@@ -96,7 +96,11 @@ target_include_directories (
          $<BUILD_INTERFACE:${st_HAL_DRV_INCLUDE_DIR}>
          $<BUILD_INTERFACE:${st_HAL_DRV_INCLUDE_LEGACY_DIR}>
          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>)
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Legacy>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Device>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Core>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${libName}/CMSIS>)
 
 target_compile_definitions (${libName} PUBLIC USE_HAL_DRIVER ${STM32_DEVICE})
 
@@ -105,7 +109,6 @@ set_target_properties (
   PROPERTIES C_STANDARD 11
              C_STANDARD_REQUIRED ON
              C_EXTENSIONS OFF
-             PUBLIC_HEADER "${${libName}_PUBLIC_HEADERS}"
              EXPORT_NAME framework)
 
 # Conditionally link CMSIS library
@@ -128,8 +131,38 @@ install (
   EXPORT ${libName}Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName} COMPONENT library)
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Install headers preserving directory structure Install HAL and LL headers (includes Legacy subdirectory)
+install (
+  DIRECTORY ${st_HAL_DRV_INCLUDE_DIR}/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
+  FILES_MATCHING
+  PATTERN "*.h"
+  PATTERN "*template*" EXCLUDE)
+
+# Install CMSIS device headers
+install (
+  DIRECTORY ${cmsis_DEVICE_INCLUDE_PATH}/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Device
+  FILES_MATCHING
+  PATTERN "*.h"
+  PATTERN "*template*" EXCLUDE)
+
+# Conditionally install CMSIS Core and Include headers if not using external CMSIS
+if (cmsis STREQUAL "")
+  install (
+    DIRECTORY ${cmsis_CORE_INCLUDE_PATH}/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Core
+    FILES_MATCHING
+    PATTERN "*.h")
+
+  install (
+    DIRECTORY ${cmsis_INCLUDE_PATH}/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/CMSIS
+    FILES_MATCHING
+    PATTERN "*.h")
+endif ()
 
 # Target's cmake files: targets export
 install (

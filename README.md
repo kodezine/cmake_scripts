@@ -75,6 +75,7 @@ Silicon vendor HAL/LL driver integration with automatic fetching and configurati
 - **Device Coverage**: 8+ validated devices (STM32F031x6, F072xB, F303xE, F429xx, G431xx, G474xx, H7A3xxQ, H743xx)
 - **CMSIS Integration**: Automatic CMSIS v5/v6 detection and linking
 - **HAL Configuration**: Custom or template-based configuration support
+- **Installation**: Component-based installation with enhanced CMake package support
 
 📖 **Documentation**: [STM32CubeXX Integration Guide](./silicon/STMicroelectronics/stm32cubexx.md)
 

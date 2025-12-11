@@ -131,12 +131,13 @@ install (
   EXPORT ${libName}Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT library)
 
 # Install headers preserving directory structure Install HAL and LL headers (includes Legacy subdirectory)
 install (
   DIRECTORY ${st_HAL_DRV_INCLUDE_DIR}/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}
+  COMPONENT library
   FILES_MATCHING
   PATTERN "*.h"
   PATTERN "*template*" EXCLUDE)
@@ -145,6 +146,7 @@ install (
 install (
   DIRECTORY ${cmsis_DEVICE_INCLUDE_PATH}/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Device
+  COMPONENT library
   FILES_MATCHING
   PATTERN "*.h"
   PATTERN "*template*" EXCLUDE)
@@ -154,12 +156,14 @@ if (cmsis STREQUAL "")
   install (
     DIRECTORY ${cmsis_CORE_INCLUDE_PATH}/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/Core
+    COMPONENT library
     FILES_MATCHING
     PATTERN "*.h")
 
   install (
     DIRECTORY ${cmsis_INCLUDE_PATH}/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${libName}/CMSIS
+    COMPONENT library
     FILES_MATCHING
     PATTERN "*.h")
 endif ()
@@ -168,8 +172,11 @@ endif ()
 install (
   EXPORT ${libName}Targets
   NAMESPACE ${libName}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName})
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
+  COMPONENT library)
 
 # Target's cmake files: config and version config for find_package()
-install (FILES ${libName}Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
-         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName})
+install (
+  FILES ${libName}Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
+  COMPONENT library)

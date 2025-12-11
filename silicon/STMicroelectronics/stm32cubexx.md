@@ -10,9 +10,23 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - **Current Branch**: `support-for-stm32f43x-devices`
 - **Default Branch**: `main`
 - **License**: MIT License (Copyright 2023 sohal)
-- **Last Updated**: November 3, 2025
+- **Last Updated**: December 11, 2025
 
 ## Recent Changes Summary
+
+### Latest Updates (December 2025)
+
+#### 1. Enhanced CMake Package Configuration
+
+- **Improved `stm32cubexx.config.cmake`**: Enhanced package configuration file with proper import prefix computation
+- **Features**: Automatic path resolution, component validation, and CMake version compatibility
+- **Benefit**: Improved `find_package()` integration and better downstream project compatibility
+
+#### 2. Installation Component Specification
+
+- **Enhancement**: All install commands now include `COMPONENT library` specification
+- **Impact**: Enables selective installation and better CPack integration
+- **Affected**: Targets, headers (HAL/LL/Device/CMSIS), config files, and CMake export files
 
 ### Major Feature Additions
 
@@ -123,7 +137,30 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - SHA256 hash verification
 - Automatic `find_package()` integration
 
-#### 6. `stm32cubexx.CMakeLists.cmake` - Library Build Configuration
+#### 6. `stm32cubexx.config.cmake` - Package Configuration File
+
+**Purpose**: CMake package configuration file for `find_package()` integration
+
+**Key Features**:
+
+- **Import Prefix Computation**: Automatic calculation of installation prefix relative to config file location
+- **Targets File Inclusion**: Loads the exported CMake targets
+- **Component Validation**: Checks that all required components are available
+- **Version Compatibility**: Handles both legacy (<3.15) and modern CMake versions
+
+**Generated Variables**:
+
+- `@libName@_FOUND`: Set to TRUE when package is found
+- `_@libName@_IMPORT_PREFIX`: Computed installation prefix (temporary, cleaned up after use)
+
+**Usage in Downstream Projects**:
+
+```cmake
+find_package(stm32cubef4 REQUIRED)
+target_link_libraries(my_target PRIVATE stm32cubef4::framework)
+```
+
+#### 7. `stm32cubexx.CMakeLists.cmake` - Library Build Configuration
 
 **Purpose**: Complete CMake configuration for building STM32CubeXX static library
 
@@ -133,7 +170,7 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - Comprehensive header and source file management
 - HAL configuration file handling (custom or template)
 - Generator expression support for conditional compilation
-- Complete installation and packaging support
+- Complete installation and packaging support with component specification
 - CMake export targets for downstream projects
 
 **Target Properties**:
@@ -143,6 +180,17 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - **Standard**: C11 with no extensions
 - **Headers**: All HAL, LL, Legacy, and CMSIS headers
 - **Compile Definitions**: `USE_HAL_DRIVER`, `${STM32_DEVICE}`
+
+**Installation Components**:
+
+All installation commands now include `COMPONENT library` for better packaging:
+
+- Library targets (ARCHIVE, LIBRARY, RUNTIME)
+- HAL and LL headers (with Legacy subdirectory)
+- CMSIS device headers
+- CMSIS Core and Include headers (when using internal CMSIS)
+- CMake export targets
+- Package configuration files
 
 ## Migration Path
 
@@ -285,6 +333,59 @@ The scripts provide comprehensive status messages:
 - Source vs. precompiled library usage
 - Repository fetching status
 
+## Installation and Packaging
+
+### Component-Based Installation
+
+The STM32CubeXX integration now supports component-based installation, enabling selective installation of library artifacts:
+
+```cmake
+# Install only the library component
+cmake --install . --component library
+
+# Use with CPack for component-based packages
+set(CPACK_COMPONENTS_ALL library)
+include(CPack)
+```
+
+**Installed Components**:
+
+1. **Library Binaries**: Static library files
+2. **Headers**: HAL, LL, Legacy, Device, and CMSIS headers with preserved directory structure
+3. **CMake Files**: Export targets and package configuration files
+
+**Installation Paths** (relative to `CMAKE_INSTALL_PREFIX`):
+
+- **Libraries**: `${CMAKE_INSTALL_LIBDIR}` (typically `lib/`)
+- **Headers**: `${CMAKE_INSTALL_INCLUDEDIR}/${libName}/` with subdirectories:
+  - HAL and LL headers in root
+  - `Legacy/` for legacy headers
+  - `Device/` for device-specific CMSIS headers
+  - `Core/` for CMSIS Core headers (if using internal CMSIS)
+  - `CMSIS/` for CMSIS Include headers (if using internal CMSIS)
+- **CMake Files**: `${CMAKE_INSTALL_LIBDIR}/cmake/${libName}/`
+
+### Using Installed Libraries
+
+After installation, downstream projects can use `find_package()`:
+
+```cmake
+# Set installation prefix if non-standard
+set(CMAKE_PREFIX_PATH "/path/to/install/prefix")
+
+# Find the installed package
+find_package(stm32cubef4 REQUIRED)
+
+# Link to your target
+target_link_libraries(my_firmware PRIVATE stm32cubef4::framework)
+```
+
+The enhanced package configuration file automatically:
+- Resolves the installation prefix
+- Loads all exported targets
+- Validates component availability
+- Sets appropriate `*_FOUND` variables
+
 ## Performance Considerations
 
 ### Build Time Optimization
@@ -292,6 +393,7 @@ The scripts provide comprehensive status messages:
 1. **Use Precompiled Libraries**: Significantly reduces build time
 2. **CPM Caching**: Automatic dependency caching reduces re-download time
 3. **Selective HAL Configuration**: Custom HAL config files reduce compilation units
+4. **Component Installation**: Install only required components to reduce deployment size
 
 ### Memory Footprint
 
@@ -386,7 +488,11 @@ All integrated libraries maintain their original licenses and attribution requir
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: November 3, 2025
+**Document Version**: 1.1
+**Last Updated**: December 11, 2025
 **Maintainer**: Kodezine Team
 **Contact**: [https://github.com/kodezine/cmake_scripts/issues](https://github.com/kodezine/cmake_scripts/issues)
+
+**Changelog**:
+- v1.1 (Dec 11, 2025): Added installation/packaging documentation, enhanced config file details
+- v1.0 (Nov 3, 2025): Initial comprehensive documentation

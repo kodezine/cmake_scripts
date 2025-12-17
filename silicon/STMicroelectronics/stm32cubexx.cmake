@@ -5,9 +5,14 @@ include (CMakePrintHelpers)
 # "STM32L476xx", etc. - CORTEX_TYPE as the cortex type e.g. "cm0", "cm3", "cm4", "cm7", etc. optionally define -
 # GITHUB_BRANCH_stm32cubexx as the github tag to use with format "v1.11.5" - PRECOMPILED_TAG_stm32cubexx as the
 # precompiled tag to use with format "v1.11.5" - PRECOMPILED_RESOURCE_stm32cubexx as the precompiled resource URL to use
-# with SHA256 hash - PRE - cmsis_v5_CORE_INCLUDE_PATH and cmsis_v5_DEVICE_INCLUDE_PATH to use cmsis v5 from outside -
+# with SHA256 hash - BUILD_${libName}_LIBRARY as a boolean to control building (defaults to TRUE, set to FALSE for
+# download-only mode) - cmsis_v5_CORE_INCLUDE_PATH and cmsis_v5_DEVICE_INCLUDE_PATH to use cmsis v5 from outside -
 # cmsis_v6_CORE_INCLUDE_PATH and cmsis_v6_DEVICE_INCLUDE_PATH to use cmsis v6 from outside - STM32CubeMxConfigHeaderFile
 # to provide a custom HAL configuration file
+#
+# After fetching, the following variables are available for downstream use regardless of BUILD_${libName}_LIBRARY: -
+# ${libName}_SOURCE_DIR: path to the downloaded STM32CubeXX repository - ${libName}_BINARY_DIR: path to the binary/build
+# directory
 
 # 0 # Check for CPM package manager
 if (COMMAND CPMAddPackage)
@@ -42,6 +47,9 @@ if (NOT DEFINED GITHUB_BRANCH_${libName})
   set (GITHUB_BRANCH_${libName} "v1.11.5")
 endif ()
 message (STATUS "${libName}: uses version ${GITHUB_BRANCH_${libName}} for fetching from github.com/STMicroelectronics")
+
+# 7.1 # set the build option to control whether to build the library from source or download only
+option (BUILD_${libName}_LIBRARY "Build ${libName} from source" TRUE)
 
 # 8 # Check if a precompiled tag is defined, else fetch from github
 if (DEFINED PRECOMPILED_TAG_${libName})
@@ -83,14 +91,19 @@ else ()
     OPTIONS
     DOWNLOAD_ONLY
     TRUE)
-  message (STATUS "${libName}: configuring and building from source")
-  # 13 # strip the GITHUB_BRANCH_${libName} "v" for CMMakeLists Versioning
-  string (REPLACE "v" "" ${libName}Version ${GITHUB_BRANCH_${libName}})
-  # 14 # configure the CMakeLists and Config files into the source directory
-  configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake
-                  @ONLY)
-  configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt
-                  COPYONLY)
-  # 15 # add the subdirectory to build the library from source
-  add_subdirectory (${${libName}_SOURCE_DIR} ${${libName}_BINARY_DIR})
+  # 13 # conditionally configure and build the library based on BUILD_${libName}_LIBRARY option
+  if (BUILD_${libName}_LIBRARY)
+    message (STATUS "${libName}: configuring and building from source")
+    # strip the GITHUB_BRANCH_${libName} "v" for CMMakeLists Versioning
+    string (REPLACE "v" "" ${libName}Version ${GITHUB_BRANCH_${libName}})
+    # configure the CMakeLists and Config files into the source directory
+    configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake
+                    @ONLY)
+    configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt
+                    COPYONLY)
+    # add the subdirectory to build the library from source
+    add_subdirectory (${${libName}_SOURCE_DIR} ${${libName}_BINARY_DIR})
+  else ()
+    message (STATUS "${libName}: downloaded to ${${libName}_SOURCE_DIR} (build skipped)")
+  endif ()
 endif ()

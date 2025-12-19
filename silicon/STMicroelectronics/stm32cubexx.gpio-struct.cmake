@@ -1,16 +1,43 @@
 # ======================================================================== GPIO Structure Auto-Generation
 # ========================================================================
-# Generate cpb_gpio_struct.h and cpb_gpio_struct.c from main.h GPIO defines
+# Generate gpio_struct.h and gpio_struct.c from main.h GPIO defines
 #
-# This script parses main.h for GPIO pin/port define pairs and generates: - cpb_gpio_struct.h: Enum definitions and
-# structure typedefs - cpb_gpio_struct.c: Const array with designated initializers
+# This script parses main.h for GPIO pin/port define pairs and generates: - gpio_struct.h: Enum definitions and
+# structure typedefs - gpio_struct.c: Const array with designated initializers
 #
 # Required variables to be set by caller: - MAIN_HEADER: Path to main.h file containing GPIO defines - GPIO_STRUCT_DIR:
 # Output directory for generated files
+#
+# Optional variables: - GPIO_STRUCT_HEADER_NAME: Output header filename (default: gpio_struct.h) -
+# GPIO_STRUCT_SOURCE_NAME: Output source filename (default: gpio_struct.c) - GPIO_ENUM_PREFIX: Prefix for enum type name
+# (default: gpio) - GPIO_STRUCT_PREFIX: Prefix for structure type name (default: gpio)
 # ========================================================================
 
-set (GPIO_STRUCT_HEADER "${GPIO_STRUCT_DIR}/cpb_gpio_struct.h")
-set (GPIO_STRUCT_SOURCE "${GPIO_STRUCT_DIR}/cpb_gpio_struct.c")
+# Check for user-defined filenames, use defaults if not provided
+if (NOT DEFINED GPIO_STRUCT_HEADER_NAME)
+  set (GPIO_STRUCT_HEADER_NAME "gpio_struct.h")
+endif ()
+
+if (NOT DEFINED GPIO_STRUCT_SOURCE_NAME)
+  set (GPIO_STRUCT_SOURCE_NAME "gpio_struct.c")
+endif ()
+
+if (NOT DEFINED GPIO_ENUM_PREFIX)
+  set (GPIO_ENUM_PREFIX "gpio")
+endif ()
+
+if (NOT DEFINED GPIO_STRUCT_PREFIX)
+  set (GPIO_STRUCT_PREFIX "gpio")
+endif ()
+
+# Construct full paths
+set (GPIO_STRUCT_HEADER "${GPIO_STRUCT_DIR}/${GPIO_STRUCT_HEADER_NAME}")
+set (GPIO_STRUCT_SOURCE "${GPIO_STRUCT_DIR}/${GPIO_STRUCT_SOURCE_NAME}")
+
+# Generate uppercase versions for header guards and count names
+string (TOUPPER "${GPIO_ENUM_PREFIX}" GPIO_ENUM_PREFIX_UPPER)
+string (TOUPPER "${GPIO_STRUCT_HEADER_NAME}" HEADER_GUARD_BASE)
+string (REGEX REPLACE "\\." "_" HEADER_GUARD "${HEADER_GUARD_BASE}")
 
 # Read main.h file
 file (STRINGS "${MAIN_HEADER}" MAIN_H_CONTENTS)
@@ -34,8 +61,8 @@ file (
   "/* Generated from: ${MAIN_HEADER} */\n"
   "/* Generation time: ${GENERATION_TIMESTAMP} */\n"
   "\n"
-  "#ifndef CPB_GPIO_STRUCT_H\n"
-  "#define CPB_GPIO_STRUCT_H\n"
+  "#ifndef ${HEADER_GUARD}\n"
+  "#define ${HEADER_GUARD}\n"
   "\n"
   "#ifdef __cplusplus\n"
   "extern \"C\" {\n"
@@ -60,24 +87,24 @@ endforeach ()
 
 file (
   APPEND "${GPIO_STRUCT_HEADER}"
-  "    eCPB_GPIO_COUNT\n"
-  "} cpb_gpio_e;\n"
+  "    e${GPIO_ENUM_PREFIX_UPPER}_COUNT\n"
+  "} ${GPIO_ENUM_PREFIX}_e;\n"
   "\n"
   "/* GPIO pin structure */\n"
   "typedef struct\n"
   "{\n"
   "    GPIO_TypeDef *pPort;\n"
   "    uint32_t uPin;\n"
-  "} cpb_gpio_t;\n"
+  "} ${GPIO_STRUCT_PREFIX}_t;\n"
   "\n"
   "/* GPIO pins array */\n"
-  "extern const cpb_gpio_t cpb_gpio_pins[eCPB_GPIO_COUNT];\n"
+  "extern const ${GPIO_STRUCT_PREFIX}_t ${GPIO_STRUCT_PREFIX}_pins[e${GPIO_ENUM_PREFIX_UPPER}_COUNT];\n"
   "\n"
   "#ifdef __cplusplus\n"
   "}\n"
   "#endif\n"
   "\n"
-  "#endif /* CPB_GPIO_STRUCT_H */\n")
+  "#endif /* ${HEADER_GUARD} */\n")
 
 # Generate source file
 file (
@@ -87,10 +114,10 @@ file (
   "/* Generation time: ${GENERATION_TIMESTAMP} */\n"
   "\n"
   "#include \"main.h\"\n"
-  "#include \"cpb_gpio_struct.h\"\n"
+  "#include \"${GPIO_STRUCT_HEADER_NAME}\"\n"
   "\n"
   "/* GPIO pins array with designated initializers */\n"
-  "const cpb_gpio_t cpb_gpio_pins[eCPB_GPIO_COUNT] = \n"
+  "const ${GPIO_STRUCT_PREFIX}_t ${GPIO_STRUCT_PREFIX}_pins[e${GPIO_ENUM_PREFIX_UPPER}_COUNT] = \n"
   "{\n")
 
 # Add array initializers with designated initializers
@@ -100,4 +127,4 @@ endforeach ()
 
 file (APPEND "${GPIO_STRUCT_SOURCE}" "};\n")
 
-message (STATUS "Generated GPIO structures: ${ENUM_INDEX} pins found")
+message (STATUS "Generated GPIO structures: ${ENUM_INDEX} pins found in ${GPIO_STRUCT_HEADER_NAME}")

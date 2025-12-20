@@ -10,19 +10,26 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - **Current Branch**: `support-for-stm32f43x-devices`
 - **Default Branch**: `main`
 - **License**: MIT License (Copyright 2023 sohal)
-- **Last Updated**: December 11, 2025
+- **Last Updated**: December 20, 2025
 
 ## Recent Changes Summary
 
 ### Latest Updates (December 2025)
 
-#### 1. Enhanced CMake Package Configuration
+#### 1. GPIO Structure Auto-Generation (NEW)
+
+- **New Script**: `stm32cubexx.gpio-struct.cmake` for automatic GPIO structure generation
+- **Features**: Parses STM32CubeMX `main.h` to generate enum definitions, structure typedefs, and const arrays
+- **Customization**: User-defined filenames, type prefixes, and output directories
+- **Benefit**: Eliminates manual GPIO table maintenance and ensures type-safe GPIO access
+
+#### 2. Enhanced CMake Package Configuration
 
 - **Improved `stm32cubexx.config.cmake`**: Enhanced package configuration file with proper import prefix computation
 - **Features**: Automatic path resolution, component validation, and CMake version compatibility
 - **Benefit**: Improved `find_package()` integration and better downstream project compatibility
 
-#### 2. Installation Component Specification
+#### 3. Installation Component Specification
 
 - **Enhancement**: All install commands now include `COMPONENT library` specification
 - **Impact**: Enables selective installation and better CPack integration
@@ -30,19 +37,26 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 
 ### Major Feature Additions
 
-#### 1. New STMicroelectronics Integration Structure
+#### 1. GPIO Structure Auto-Generation Utility
+
+- **Script**: `stm32cubexx.gpio-struct.cmake`
+- **Purpose**: Automated generation of GPIO pin/port structures from STM32CubeMX output
+- **Features**: Customizable naming, cross-platform CMake implementation, C99 designated initializers
+- **Benefits**: Type-safe GPIO access, automatic synchronization with hardware changes
+
+#### 2. New STMicroelectronics Integration Structure
 
 - **Location**: `/silicon/STMicroelectronics/`
 - **Purpose**: Modernized approach to STM32 HAL/LL driver integration
 - **Migration**: Transitioning from `/silicon/st/` to `/silicon/STMicroelectronics/`
 
-#### 2. STM32F429xx Device Support
+#### 3. STM32F429xx Device Support
 
 - **Branch**: `support-for-stm32f43x-devices`
 - **Addition**: Support for STM32F429xx devices in the supported device list
 - **Impact**: Expands compatibility to STM32F4 series high-performance devices
 
-#### 3. CPM Package Manager Integration
+#### 4. CPM Package Manager Integration
 
 - **Feature**: Modern dependency management using CPM (CMake Package Manager)
 - **Benefit**: Simplified, reproducible builds with automatic dependency resolution
@@ -160,7 +174,171 @@ find_package(stm32cubef4 REQUIRED)
 target_link_libraries(my_target PRIVATE stm32cubef4::framework)
 ```
 
-#### 7. `stm32cubexx.CMakeLists.cmake` - Library Build Configuration
+#### 7. `stm32cubexx.gpio-struct.cmake` - GPIO Structure Auto-Generation
+
+**Purpose**: Automatically generate GPIO pin/port structure definitions from STM32CubeMX-generated `main.h` file
+
+**Key Features**:
+
+- **Automatic Parsing**: Extracts GPIO pin/port define pairs from `main.h`
+- **Code Generation**: Creates enumeration, structure typedef, and const array with designated initializers
+- **Customizable Output**: User-defined filenames, type names, and prefixes
+- **Cross-Platform**: Uses only CMake built-in commands (no external dependencies)
+- **Configure-Time Execution**: Runs during CMake configuration phase
+
+**Required Variables**:
+
+- `MAIN_HEADER`: Absolute path to `main.h` file containing GPIO defines (e.g., from STM32CubeMX)
+- `GPIO_STRUCT_DIR`: Output directory for generated files
+
+**Optional Variables** (with defaults):
+
+- `GPIO_STRUCT_HEADER_NAME`: Output header filename (default: `gpio_struct.h`)
+- `GPIO_STRUCT_SOURCE_NAME`: Output source filename (default: `gpio_struct.c`)
+- `GPIO_ENUM_PREFIX`: Prefix for enum type name (default: `gpio`)
+- `GPIO_STRUCT_PREFIX`: Prefix for structure type name (default: `gpio`)
+
+**Generated Files**:
+
+1. **Header File** (`gpio_struct.h` by default):
+   - Auto-generation warning with timestamp and source file reference
+   - Include guard based on filename
+   - GPIO pin enumeration with sequential values (e.g., `eM_LED1 = 0`, `eM_LED2`, ...)
+   - Enum count value: `e{PREFIX}_COUNT` (e.g., `eGPIO_COUNT`)
+   - Structure typedef: `{prefix}_t` with `GPIO_TypeDef *pPort` and `uint32_t uPin` fields
+   - Extern array declaration
+
+2. **Source File** (`gpio_struct.c` by default):
+   - Auto-generation warning
+   - Includes for `main.h` and generated header
+   - Const array with C99 designated initializers
+   - Each entry maps enum value to original pin/port defines
+
+**Usage Example (Default Settings)**:
+
+```cmake
+# Set required variables
+set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gpio")
+set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc/main.h")
+
+# Include the generator script (uses defaults)
+include(stm32cubexx.gpio-struct.cmake)
+
+# Add generated source to your target
+target_sources(my_firmware PRIVATE ${GPIO_STRUCT_DIR}/gpio_struct.c)
+target_include_directories(my_firmware PUBLIC ${GPIO_STRUCT_DIR})
+```
+
+**Generated Code Example (Defaults)**:
+
+```c
+// gpio_struct.h
+typedef enum {
+    eM_LED1 = 0,
+    eM_LED2,
+    eM_WATCHDOG,
+    eGPIO_COUNT
+} gpio_e;
+
+typedef struct {
+    GPIO_TypeDef *pPort;
+    uint32_t uPin;
+} gpio_t;
+
+extern const gpio_t gpio_pins[eGPIO_COUNT];
+
+// gpio_struct.c
+const gpio_t gpio_pins[eGPIO_COUNT] = {
+    [eM_LED1] = {M_LED1_GPIO_Port, M_LED1_Pin},
+    [eM_LED2] = {M_LED2_GPIO_Port, M_LED2_Pin},
+    [eM_WATCHDOG] = {M_WATCHDOG_GPIO_Port, M_WATCHDOG_Pin},
+};
+```
+
+**Usage Example (Custom Settings)**:
+
+```cmake
+# Set required variables
+set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/board/gpio")
+set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc/main.h")
+
+# Customize output filenames and prefixes
+set(GPIO_STRUCT_HEADER_NAME "board_gpio.h")
+set(GPIO_STRUCT_SOURCE_NAME "board_gpio.c")
+set(GPIO_ENUM_PREFIX "board_gpio")
+set(GPIO_STRUCT_PREFIX "board_gpio")
+
+# Include the generator script
+include(stm32cubexx.gpio-struct.cmake)
+
+# Add generated source to your target
+target_sources(my_firmware PRIVATE ${GPIO_STRUCT_DIR}/${GPIO_STRUCT_SOURCE_NAME})
+target_include_directories(my_firmware PUBLIC ${GPIO_STRUCT_DIR})
+```
+
+**Generated Code Example (Custom Settings)**:
+
+```c
+// board_gpio.h
+typedef enum {
+    eM_LED1 = 0,
+    eM_LED2,
+    eBOARD_GPIO_COUNT
+} board_gpio_e;
+
+typedef struct {
+    GPIO_TypeDef *pPort;
+    uint32_t uPin;
+} board_gpio_t;
+
+extern const board_gpio_t board_gpio_pins[eBOARD_GPIO_COUNT];
+
+// board_gpio.c
+const board_gpio_t board_gpio_pins[eBOARD_GPIO_COUNT] = {
+    [eM_LED1] = {M_LED1_GPIO_Port, M_LED1_Pin},
+    [eM_LED2] = {M_LED2_GPIO_Port, M_LED2_Pin},
+};
+```
+
+**Practical Application**:
+
+```c
+// In your firmware code
+#include "gpio_struct.h"
+
+void led_on(gpio_e led) {
+    HAL_GPIO_WritePin(gpio_pins[led].pPort,
+                      gpio_pins[led].uPin,
+                      GPIO_PIN_SET);
+}
+
+// Usage
+led_on(eM_LED1);  // Turn on LED1
+led_on(eM_LED2);  // Turn on LED2
+```
+
+**Benefits**:
+
+- **Type Safety**: Enum-based indexing prevents invalid GPIO access
+- **Maintainability**: Automatically syncs with STM32CubeMX regeneration
+- **Consistency**: Eliminates manual GPIO table maintenance
+- **Flexibility**: Customizable naming for multi-board projects
+- **Documentation**: Auto-generated headers include timestamp and source reference
+
+**Input Format** (from `main.h`):
+
+The script parses GPIO defines matching this pattern:
+
+```c
+#define M_LED1_Pin GPIO_PIN_3
+#define M_LED1_GPIO_Port GPIOE
+#define M_LED2_Pin GPIO_PIN_4
+#define M_LED2_GPIO_Port GPIOE
+```
+
+Each `{NAME}_Pin` and matching `{NAME}_GPIO_Port` pair creates one array entry with enum value `e{NAME}`.
+
+#### 8. `stm32cubexx.CMakeLists.cmake` - Library Build Configuration
 
 **Purpose**: Complete CMake configuration for building STM32CubeXX static library
 
@@ -269,6 +447,101 @@ set(PRECOMPILED_RESOURCE_stm32cubef4 "https://github.com/kodezine/precompiled/re
 
 # Include integration (will automatically use precompiled version)
 include(${CMAKE_SOURCE_DIR}/cmake_scripts/silicon/STMicroelectronics/stm32cubexx.cmake)
+```
+
+### GPIO Structure Auto-Generation
+
+#### Basic Usage (Default Settings)
+
+```cmake
+# Set required paths
+set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated/gpio")
+set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc/main.h")
+
+# Generate GPIO structures (creates gpio_struct.h and gpio_struct.c)
+include(${CMAKE_SOURCE_DIR}/cmake_scripts/silicon/STMicroelectronics/stm32cubexx.gpio-struct.cmake)
+
+# Add generated files to your firmware target
+target_sources(my_firmware PRIVATE ${GPIO_STRUCT_DIR}/gpio_struct.c)
+target_include_directories(my_firmware PUBLIC ${GPIO_STRUCT_DIR})
+```
+
+#### Custom Settings for Board-Specific Names
+
+```cmake
+# Set required paths
+set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/board/hardware")
+set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc/main.h")
+
+# Customize filenames and type prefixes
+set(GPIO_STRUCT_HEADER_NAME "board_pins.h")
+set(GPIO_STRUCT_SOURCE_NAME "board_pins.c")
+set(GPIO_ENUM_PREFIX "board_pin")
+set(GPIO_STRUCT_PREFIX "board_pin")
+
+# Generate GPIO structures
+include(${CMAKE_SOURCE_DIR}/cmake_scripts/silicon/STMicroelectronics/stm32cubexx.gpio-struct.cmake)
+
+# Add generated files to your firmware target
+target_sources(my_firmware PRIVATE ${GPIO_STRUCT_DIR}/${GPIO_STRUCT_SOURCE_NAME})
+target_include_directories(my_firmware PUBLIC ${GPIO_STRUCT_DIR})
+```
+
+**Application Code Example**:
+
+```c
+#include "gpio_struct.h"
+
+// Type-safe GPIO control
+void set_led_state(gpio_e led, bool on) {
+    HAL_GPIO_WritePin(gpio_pins[led].pPort,
+                      gpio_pins[led].uPin,
+                      on ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+// Generic GPIO toggle
+void toggle_gpio(gpio_e pin) {
+    HAL_GPIO_TogglePin(gpio_pins[pin].pPort, gpio_pins[pin].uPin);
+}
+
+// Usage in main
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+
+    while (1) {
+        set_led_state(eM_LED1, true);   // Turn on LED1
+        HAL_Delay(500);
+        set_led_state(eM_LED1, false);  // Turn off LED1
+        HAL_Delay(500);
+
+        toggle_gpio(eM_WATCHDOG);       // Toggle watchdog pin
+    }
+}
+```
+
+**Multi-Board Project Example**:
+
+```cmake
+# Board A configuration
+if(BOARD_TYPE STREQUAL "board_a")
+    set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boards/board_a/gpio")
+    set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/boards/board_a/Core/Inc/main.h")
+    set(GPIO_ENUM_PREFIX "board_a_gpio")
+    set(GPIO_STRUCT_PREFIX "board_a_gpio")
+endif()
+
+# Board B configuration
+if(BOARD_TYPE STREQUAL "board_b")
+    set(GPIO_STRUCT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/boards/board_b/gpio")
+    set(MAIN_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/boards/board_b/Core/Inc/main.h")
+    set(GPIO_ENUM_PREFIX "board_b_gpio")
+    set(GPIO_STRUCT_PREFIX "board_b_gpio")
+endif()
+
+# Generate board-specific GPIO structures
+include(${CMAKE_SOURCE_DIR}/cmake_scripts/silicon/STMicroelectronics/stm32cubexx.gpio-struct.cmake)
 ```
 
 ## Build System Integration

@@ -107,6 +107,7 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 "STM32G474xx"    # STM32G4 series - Cortex-M4F
 "STM32H7A3xxQ"   # STM32H7 series - Cortex-M7
 "STM32H743xx"    # STM32H7 series - Cortex-M7
+"STM32H753xx"    # STM32H7 series - Cortex-M7
 ```
 
 **Validation**: Performs compile-time validation of `STM32_DEVICE` against supported list

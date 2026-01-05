@@ -1,0 +1,5 @@
+# ATFE Generated Configuration Files
+# These files are dynamically generated at CMake configure time
+# based on cache variables from downstream presets.
+# They should never be committed to version control.
+.atfe_config/

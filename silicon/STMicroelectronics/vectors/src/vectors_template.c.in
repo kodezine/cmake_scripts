@@ -1,0 +1,133 @@
+#include "vectors.h"
+#include "cmsis_compiler.h"
+#include "@DEVICE_FAMILY_LOWER@.h"
+#include "system_@DEVICE_FAMILY_LOWER@.h"
+#include <stdint.h>
+
+/******************************************************************************
+ * @file     vectors_@DEVICE_LOWER@.c
+ * @brief    CMSIS-Core(M) Device Startup File for @DEVICE_NAME@
+ * @version  V1.0.0
+ * @date     @GENERATION_DATE@
+ * @note     Generated from vectors_template.c.in
+ *           Based on @STARTUP_FILE_REFERENCE@
+ ******************************************************************************/
+
+/*---------------------------------------------------------------------------
+  External References
+ *---------------------------------------------------------------------------*/
+extern uint32_t __INITIAL_SP;
+extern uint32_t __STACK_LIMIT;
+
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+extern uint32_t __STACK_SEAL;
+#endif
+
+extern __NO_RETURN void __PROGRAM_START(void);
+
+/*---------------------------------------------------------------------------
+  Internal References
+ *---------------------------------------------------------------------------*/
+__NO_RETURN void Default_Handler(void);
+void             init_vector_table(void);
+void             check_and_enable_interrupts(void);
+
+/* ToDo: Add Cortex exception handler according the used Cortex-Core */
+/*---------------------------------------------------------------------------
+  Exception / Interrupt Handler
+ *---------------------------------------------------------------------------*/
+__NO_RETURN void Reset_Handler(void);
+void             NMI_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             HardFault_Handler(void) __attribute__((weak));
+void             MemManage_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             BusFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             UsageFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             SVC_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             DebugMon_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             PendSV_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void             SysTick_Handler(void) __attribute__((weak, alias("Default_Handler")));
+
+/* @DEVICE_NAME@ External Interrupts */
+@IRQ_HANDLER_DECLARATIONS@
+
+/*----------------------------------------------------------------------------
+  Exception / Interrupt Vector table
+ *----------------------------------------------------------------------------*/
+
+#if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
+/* ToDo: Add Cortex exception vectors according the used Cortex-Core */
+extern const VECTOR_TABLE_Type __VECTOR_TABLE[256];
+const VECTOR_TABLE_Type        __VECTOR_TABLE[256] __VECTOR_TABLE_ATTRIBUTE = {
+@VECTOR_TABLE_ENTRIES@
+};
+#if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif
+
+/*---------------------------------------------------------------------------
+  Reset Handler called on controller reset
+ *---------------------------------------------------------------------------*/
+__NO_RETURN void Reset_Handler(void)
+{
+    __set_PSP((uint32_t)(&__INITIAL_SP));
+
+/* ToDo: Initialize stack limit register for Armv8-M Main Extension based processors*/
+//    __set_MSP((uint32_t)(&__STACK_LIMIT));
+//    __set_PSP((uint32_t)(&__STACK_LIMIT));
+
+/* ToDo: Add stack sealing for Armv8-M based processors */
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+    __TZ_set_STACKSEAL_S((uint32_t*)(&__STACK_SEAL));
+#endif
+
+    SystemInit(); /* CMSIS System Initialization */
+
+    __PROGRAM_START(); /* Enter PreMain (C library entry point) */
+}
+
+#if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wmissing-noreturn"
+#endif
+
+/*---------------------------------------------------------------------------
+  Hard Fault Handler
+ *---------------------------------------------------------------------------*/
+void HardFault_Handler(void)
+{
+    while (1)
+        ;
+}
+
+/*---------------------------------------------------------------------------
+  Default Handler for Exceptions / Interrupts
+ *---------------------------------------------------------------------------*/
+void Default_Handler(void)
+{
+    while (1)
+        ;
+}
+
+void init_vector_table(void)
+{
+    SCB->VTOR = (uint32_t)(&__VECTOR_TABLE[0]);
+    // __HAL_RCC_SYSCFG_CLK_ENABLE();
+    // __HAL_SYSCFG_REMAPMEMORY_FLASH();
+}
+
+void check_and_enable_interrupts(void)
+{
+    volatile int PriMaskValue = __get_PRIMASK();
+    if (PriMaskValue != 0)
+    {
+        __enable_irq();
+    }
+}
+
+#if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+    #pragma clang diagnostic pop
+#endif

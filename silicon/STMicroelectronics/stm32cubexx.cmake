@@ -51,6 +51,9 @@ message (STATUS "${libName}: uses version ${GITHUB_BRANCH_${libName}} for fetchi
 # 7.1 # set the build option to control whether to build the library from source or download only
 option (BUILD_${libName}_LIBRARY "Build ${libName} from source" TRUE)
 
+# 7.2 # set the option to control vector table C file generation from assembly
+option (GENERATE_VECTOR_TABLE_C "Generate vectors C file from assembly" ON)
+
 # 8 # Check if a precompiled tag is defined, else fetch from github
 if (DEFINED PRECOMPILED_TAG_${libName})
   include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.precompiled.cmake)
@@ -91,7 +94,14 @@ else ()
     OPTIONS
     DOWNLOAD_ONLY
     TRUE)
-  # 13 # conditionally configure and build the library based on BUILD_${libName}_LIBRARY option
+
+  # 13 # conditionally generate vector table C file from assembly
+  if (GENERATE_VECTOR_TABLE_C)
+    include (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.vectors.cmake)
+    generate_vector_table_source ()
+  endif ()
+
+  # 14 # conditionally configure and build the library based on BUILD_${libName}_LIBRARY option
   if (BUILD_${libName}_LIBRARY)
     message (STATUS "${libName}: configuring and building from source")
     # strip the GITHUB_BRANCH_${libName} "v" for CMMakeLists Versioning

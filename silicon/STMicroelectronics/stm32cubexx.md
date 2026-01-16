@@ -16,14 +16,21 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 
 ### Latest Updates (December 2025)
 
-#### 1. GPIO Structure Auto-Generation (NEW)
+#### 1. Vector Table Auto-Generation from Assembly Files (NEW - January 2026)
+
+- **New Script**: `stm32cubexx.vectors.cmake` for automatic C startup file generation from GCC assembly
+- **Features**: Parses startup assembly files to generate `vectors_<device>.c` files with device-specific interrupt handlers
+- **Template**: `vectors/src/vectors_template.c.in` for consistent vector table structure
+- **Benefit**: Eliminates manual vector table creation, ensures exact match with vendor assembly files, supports all 32-bit ARM devices with 256-entry modular approach
+
+#### 2. GPIO Structure Auto-Generation
 
 - **New Script**: `stm32cubexx.gpio-struct.cmake` for automatic GPIO structure generation
 - **Features**: Parses STM32CubeMX `main.h` to generate enum definitions, structure typedefs, and const arrays
 - **Customization**: User-defined filenames, type prefixes, and output directories
 - **Benefit**: Eliminates manual GPIO table maintenance and ensures type-safe GPIO access
 
-#### 2. Enhanced CMake Package Configuration
+#### 3. Enhanced CMake Package Configuration
 
 - **Improved `stm32cubexx.config.cmake`**: Enhanced package configuration file with proper import prefix computation
 - **Features**: Automatic path resolution, component validation, and CMake version compatibility
@@ -37,7 +44,26 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 
 ### Major Feature Additions
 
-#### 1. GPIO Structure Auto-Generation Utility
+#### 1. Vector Table Auto-Generation from Assembly Files (NEW - January 2026)
+
+- **Script**: `stm32cubexx.vectors.cmake`
+- **Template**: `vectors/src/vectors_template.c.in`
+- **Purpose**: Automatically generate C startup files with device-specific vector tables from GCC assembly files
+- **Features**:
+  - Parses `.word` entries from startup assembly files
+  - Extracts all interrupt handler names and positions (0-255)
+  - Generates IRQ handler declarations for external interrupts
+  - Creates 256-entry vector table with position comments
+  - Detects and marks reserved entries
+  - Handles device-specific variations (H7/F7/F4/G4 families)
+- **Benefits**:
+  - Eliminates error-prone manual vector table creation
+  - Guarantees exact match with vendor-provided assembly files
+  - Simplifies migration between device variants
+  - Provides modular 256-entry structure for all 32-bit ARM Cortex-M devices
+  - Generated files available for optional downstream compilation
+
+#### 2. GPIO Structure Auto-Generation Utility
 
 - **Script**: `stm32cubexx.gpio-struct.cmake`
 - **Purpose**: Automated generation of GPIO pin/port structures from STM32CubeMX output
@@ -84,6 +110,11 @@ This document provides comprehensive documentation for the STM32CubeXX library i
 - `cmsis_v5_CORE_INCLUDE_PATH` & `cmsis_v5_DEVICE_INCLUDE_PATH`: External CMSIS v5
 - `cmsis_v6_CORE_INCLUDE_PATH` & `cmsis_v6_DEVICE_INCLUDE_PATH`: External CMSIS v6
 - `STM32CubeMxConfigHeaderFile`: Custom HAL configuration file
+
+**CMake Options**:
+
+- `BUILD_${libName}_LIBRARY`: Build library from source (default: TRUE)
+- `GENERATE_VECTOR_TABLE_C`: Generate vectors C file from assembly (default: ON)
 
 **Key Features**:
 
@@ -175,7 +206,103 @@ find_package(stm32cubef4 REQUIRED)
 target_link_libraries(my_target PRIVATE stm32cubef4::framework)
 ```
 
-#### 7. `stm32cubexx.gpio-struct.cmake` - GPIO Structure Auto-Generation
+#### 7. `stm32cubexx.vectors.cmake` - Vector Table Generation from Assembly
+
+**Purpose**: Automatically generate C startup files with device-specific interrupt vector tables from GCC assembly files
+
+**Key Features**:
+
+- **Assembly File Discovery**: Automatically locates `startup_<device>.s` in GCC templates directory
+- **Intelligent Parsing**: Extracts vector table entries between `g_pfnVectors:` and `.size g_pfnVectors`
+- **Handler Detection**: Identifies IRQ handlers (ending with `_IRQHandler`) for declaration generation
+- **Reserved Entry Handling**: Detects `.word 0` entries and marks them as reserved
+- **Position Tracking**: Generates all 256 vector positions with index comments
+- **Special Handling**: Converts `_estack` to `__INITIAL_SP` for position 0
+- **Non-Blocking**: Skips generation with status message if assembly file not found or parsing fails
+
+**Generated Files**:
+
+- Output: `vectors/src/vectors_<device>.c` (e.g., `vectors_stm32f429xx.c`)
+- Location: Same directory as `vectors_template.c.in`
+- Size: Fixed 256-entry vector table for modular consistency
+
+**CMake Option**:
+
+- `GENERATE_VECTOR_TABLE_C`: Enable/disable vector generation (default: ON)
+
+**Template Variables**:
+
+- `@DEVICE_FAMILY_LOWER@`: Device family (e.g., "stm32f4xx")
+- `@DEVICE_LOWER@`: Device name in lowercase (e.g., "stm32f429xx")
+- `@DEVICE_NAME@`: Device name verbatim (e.g., "STM32F429xx")
+- `@GENERATION_DATE@`: Timestamp of generation
+- `@STARTUP_FILE_REFERENCE@`: Relative path to source assembly file
+- `@IRQ_HANDLER_DECLARATIONS@`: All IRQ handler declarations
+- `@VECTOR_TABLE_ENTRIES@`: Complete vector table (positions 0-255)
+
+**Usage**:
+
+Vector generation runs automatically when:
+1. `GENERATE_VECTOR_TABLE_C` option is ON (default)
+2. STM32CubeXX repository is fetched
+3. GCC startup assembly file exists for the specified device
+
+**Generated File Usage**:
+
+The generated `vectors_<device>.c` file is available at:
+```
+<cmake_scripts_location>/silicon/STMicroelectronics/vectors/src/vectors_<device>.c
+```
+
+Downstream projects can optionally compile this file instead of using assembly startup files:
+
+```cmake
+# Option 1: Use generated C file (recommended for portability)
+target_sources(my_firmware PRIVATE
+    ${CMAKE_SOURCE_DIR}/path/to/vectors_stm32f429xx.c)
+
+# Option 2: Continue using assembly file (traditional approach)
+target_sources(my_firmware PRIVATE
+    ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.s)
+```
+
+**Example Generated File Structure**:
+
+```c
+// Auto-generated header includes
+#include "vectors.h"
+#include "stm32f4xx.h"
+#include "system_stm32f4xx.h"
+
+// IRQ handler declarations (auto-extracted)
+void WWDG_IRQHandler(void) __attribute__((weak, alias("Default_Handler")));
+void PVD_IRQHandler(void) __attribute__((weak, alias("Default_Handler")));
+// ... all device-specific handlers ...
+
+// 256-entry vector table with position comments
+const VECTOR_TABLE_Type __VECTOR_TABLE[256] __VECTOR_TABLE_ATTRIBUTE = {
+    /* 0 */ (VECTOR_TABLE_Type)(&__INITIAL_SP),
+    /* 1 */ (VECTOR_TABLE_Type)&Reset_Handler,
+    /* 2 */ (VECTOR_TABLE_Type)&NMI_Handler,
+    // ... positions 3-15: core exceptions ...
+    // ... positions 16-106: device-specific IRQs ...
+    /* 95 */ (VECTOR_TABLE_Type)0, /* Reserved */
+    // ... positions 107-255: zeros ...
+};
+```
+
+**Assembly File Location Pattern**:
+
+```
+${STM32CubeXX_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32{TYPE}xx/Source/Templates/gcc/startup_{device}.s
+```
+
+Example: For STM32F429xx:
+```
+stm32cubef4-src/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.s
+```
+
+#### 8. `stm32cubexx.gpio-struct.cmake` - GPIO Structure Auto-Generation
 
 **Purpose**: Automatically generate GPIO pin/port structure definitions from STM32CubeMX-generated `main.h` file
 

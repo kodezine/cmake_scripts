@@ -1,0 +1,190 @@
+---
+name: Create Release with Checksums
+
+"on":
+  push:
+    tags:
+      - 'v*'
+      - '*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release with SHA256 Checksums
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag_name=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Create source archives
+        id: create_archives
+        run: |
+          mkdir -p release-assets
+
+          # Create tar.gz archive
+          VERSION="${{ steps.get_version.outputs.version }}"
+          ARCHIVE_NAME="cmake_scripts-${VERSION}"
+          git archive --format=tar.gz \
+            --prefix="${ARCHIVE_NAME}/" HEAD \
+            > "release-assets/${ARCHIVE_NAME}.tar.gz"
+
+          # Create zip archive
+          git archive --format=zip \
+            --prefix="${ARCHIVE_NAME}/" HEAD \
+            > "release-assets/${ARCHIVE_NAME}.zip"
+
+          # List created archives
+          echo "Created archives:"
+          ls -lh release-assets/
+
+      - name: Generate SHA256 checksums
+        working-directory: release-assets
+        run: |
+          echo "Generating SHA256 checksums..."
+
+          # Generate individual checksum files
+          for file in ./*.tar.gz ./*.zip; do
+            if [ -f "$file" ]; then
+              sha256sum "$file" > "$file.sha256"
+              echo "Generated: $file.sha256"
+              cat "$file.sha256"
+            fi
+          done
+
+          # Create combined SHA256SUMS file
+          sha256sum ./*.tar.gz ./*.zip > SHA256SUMS.txt
+
+          echo ""
+          echo "=== Combined SHA256 Checksums ==="
+          cat SHA256SUMS.txt
+
+      - name: Verify checksums
+        working-directory: release-assets
+        run: |
+          echo "Verifying checksums..."
+          sha256sum -c SHA256SUMS.txt || {
+            echo "ERROR: Checksum verification failed!"
+            exit 1
+          }
+          echo "✓ All checksums verified successfully"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          cat > RELEASE_NOTES.md << 'EOF'
+          # CMake Scripts Release ${{ steps.get_version.outputs.tag_name }}
+
+          ## What's Included
+
+          This release contains CMake scripts and utilities for
+          embedded systems development:
+
+          - **STM32 HAL/CMSIS support**: CMake modules for
+            STM32CubeF4/F7/H7 integration
+          - **Cross-compilation toolchains**: ARM GCC and ARM Compiler
+            for Embedded support
+          - **Silicon vendor frameworks**: Reusable CMake modules for
+            STMicroelectronics
+          - **Build utilities**: Helper functions and macros for
+            embedded projects
+
+          ## Package Contents
+
+          - `silicon/STMicroelectronics/`: STM32 CMake modules
+          - `toolchains/`: Cross-compilation toolchain files
+          - `frameworks/`: Framework integration scripts
+          - `utilities/`: Reusable CMake helper functions
+
+          ## Usage
+
+          ### As CPM Package (Recommended)
+
+          ```cmake
+          include(CPM)
+          CPMAddPackage(
+            NAME cmake_scripts
+            GITHUB_REPOSITORY kodezine/cmake_scripts
+            GIT_TAG ${{ steps.get_version.outputs.tag_name }}
+            DOWNLOAD_ONLY TRUE
+          )
+          ```
+
+          ### As Git Submodule
+
+          ```bash
+          git submodule add \
+            https://github.com/kodezine/cmake_scripts.git \
+            cmake/scripts
+          ```
+
+          ### Direct Download
+
+          Download and extract the archive, then include in your
+          CMakeLists.txt:
+
+          ```cmake
+          list(APPEND CMAKE_MODULE_PATH \
+            "${CMAKE_SOURCE_DIR}/path/to/cmake_scripts")
+          ```
+
+          ## SHA256 Checksums
+
+          Verify downloaded files using the checksums below:
+
+          ```
+          EOF
+
+          # Add checksums to release notes
+          cat release-assets/SHA256SUMS.txt >> RELEASE_NOTES.md
+          echo '```' >> RELEASE_NOTES.md
+
+          echo ""
+          echo "Release notes generated"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag_name }}
+          name: CMake Scripts ${{ steps.get_version.outputs.tag_name }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: >-
+            ${{ contains(steps.get_version.outputs.tag_name, '-')
+            || contains(steps.get_version.outputs.tag_name, 'rc')
+            || contains(steps.get_version.outputs.tag_name, 'alpha')
+            || contains(steps.get_version.outputs.tag_name, 'beta') }}
+          files: |
+            release-assets/*.tar.gz
+            release-assets/*.zip
+            release-assets/*.sha256
+            release-assets/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+          make_latest: true
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Summary
+        if: success()
+        run: |
+          TAG="${{ steps.get_version.outputs.tag_name }}"
+          echo "✅ Release ${TAG} created successfully!"
+          echo ""
+          echo "📦 Release artifacts:"
+          ls -lh release-assets/
+          echo ""
+          echo "🔐 SHA256 checksums:"
+          cat release-assets/SHA256SUMS.txt

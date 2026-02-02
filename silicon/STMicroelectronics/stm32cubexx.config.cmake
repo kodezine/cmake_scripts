@@ -1,5 +1,6 @@
 # @libName@ Package Configuration File
-
+@PACKAGE_INIT@
+include (CMakeFindDependencyMacro)
 # Compute the installation prefix relative to this file
 get_filename_component (_@libName@_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}" PATH)
 get_filename_component (_@libName@_IMPORT_PREFIX "${_@libName@_IMPORT_PREFIX}" PATH)

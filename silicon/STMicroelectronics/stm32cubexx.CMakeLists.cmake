@@ -185,6 +185,6 @@ install (
 
 # Target's cmake files: config and version config for find_package()
 install (
-  FILES ${libName}Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/${libName}Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${libName}ConfigVersion.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
   COMPONENT library)

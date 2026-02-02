@@ -24,19 +24,23 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag_name=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
-          echo "Release version: $VERSION"
+          # Keep the full tag name (with 'v' prefix)
+          TAG_NAME="${GITHUB_REF_NAME}"
+          # Also extract version without 'v' for compatibility
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Release tag: ${TAG_NAME}"
+          echo "Version: ${VERSION}"
 
       - name: Create source archives
         id: create_archives
         run: |
           mkdir -p release-assets
 
-          # Create tar.gz archive
-          VERSION="${{ steps.get_version.outputs.version }}"
-          ARCHIVE_NAME="cmake_scripts-${VERSION}"
+          # Create tar.gz archive using full tag name
+          TAG_NAME="${{ steps.get_version.outputs.tag_name }}"
+          ARCHIVE_NAME="cmake_scripts-${TAG_NAME}"
           git archive --format=tar.gz \
             --prefix="${ARCHIVE_NAME}/" HEAD \
             > "release-assets/${ARCHIVE_NAME}.tar.gz"

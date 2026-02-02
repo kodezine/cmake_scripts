@@ -106,9 +106,12 @@ else ()
     message (STATUS "${libName}: configuring and building from source")
     # strip the GITHUB_BRANCH_${libName} "v" for CMMakeLists Versioning
     string (REPLACE "v" "" ${libName}Version ${GITHUB_BRANCH_${libName}})
-    # configure the CMakeLists and Config files into the source directory
-    configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.cmake ${${libName}_SOURCE_DIR}/${libName}Config.cmake
-                    @ONLY)
+    # copy the config template and CMakeLists into the source directory
+    file (
+      COPY ${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.config.in
+      DESTINATION ${${libName}_SOURCE_DIR}
+      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    file (RENAME ${${libName}_SOURCE_DIR}/stm32cubexx.config.in ${${libName}_SOURCE_DIR}/${libName}Config.cmake.in)
     configure_file (${CMAKE_CURRENT_LIST_DIR}/stm32cubexx.CMakeLists.cmake ${${libName}_SOURCE_DIR}/CMakeLists.txt
                     COPYONLY)
     # add the subdirectory to build the library from source

@@ -120,6 +120,14 @@ endif ()
 settargetcompileoptions (libName)
 
 # Package begins
+include (CMakePackageConfigHelpers)
+
+# Configure package config file with proper path relocatability
+configure_package_config_file (
+  ${CMAKE_CURRENT_SOURCE_DIR}/${libName}Config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/${libName}Config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${libName}
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
+
 write_basic_package_version_file (
   ${libName}ConfigVersion.cmake
   VERSION ${PROJECT_VERSION}

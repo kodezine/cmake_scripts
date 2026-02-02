@@ -9,7 +9,7 @@ set_and_check(@libName@_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@/@libName
 # Include the targets file
 include ("${CMAKE_CURRENT_LIST_DIR}/@libName@Targets.cmake")
 
-# 5. Check that all required components have been found
+# Check that all required components have been found
 set (@libName@_FOUND TRUE)
 if (NOT CMAKE_VERSION VERSION_LESS 3.15 AND @libName@_FIND_COMPONENTS)
   # Modern CMake has better component handling
